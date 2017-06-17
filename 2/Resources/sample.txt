@@ -1,0 +1,2 @@
+Name|Affiliation|Relationship|Type|Notes|Term
+Sample Term|Adverse|Assistant|Company|Sample Note|Sample Term

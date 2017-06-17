@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<log4net>
+
+  <root>
+    <level value="DEBUG" />
+    <appender-ref ref="DiskSpaceRollingFileAppender"/>
+  </root>
+
+  <appender name="DiskSpaceRollingFileAppender" type="Intapp.Wilco.Common.Logs.DiskSpaceRollingFileAppender, Intapp.Wilco.Common">
+    <file type="log4net.Util.PatternString" value="%property{LogName}" />
+    <appendToFile value="true" />
+    <rollingStyle value="Size" />
+    <maxSizeRollBackups value="512" />
+    <maximumFileSize value="10MB" />
+    <maxDiskSpace value = "95" />
+    <staticLogFileName value="true" />
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%date [%thread] %property{Tenant} %property{User} %-5level %property{Context} %logger - %message%newline" />
+    </layout>
+  </appender>
+
+  <appender name="TraceAppender" type="log4net.Appender.TraceAppender">
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%date [%thread] %property{User} %-5level %property{Context}: %message%newline" />
+    </layout>
+  </appender>
+
+  <appender name="CloudWatchLogsAppender" type="IntApp.Wilco.Cloud.Logs.WilcoCloudWatchLogsAppender, Intapp.Wilco.Cloud">
+    <bufferSize value="100" />
+    <lossy value="false" />
+    <evaluator type="log4net.Core.TimeEvaluator">
+      <interval value="60" />
+    </evaluator>
+    <layout type='log4net.Layout.SerializedLayout, log4net.Ext.Json'>
+      <decorator type='log4net.Layout.Decorators.StandardTypesDecorator, log4net.Ext.Json' />
+      <default />
+      <member value='tenant:%property{Tenant}'/>
+      <member value='user:%property{User}'/>
+      <member value='context:%property{Context}'/>
+      <remove value='message' />
+      <member value="text:messageobject" />
+      <member value='Host=ProcessId\;HostName'/>
+    </layout>
+
+    <!-- This property is overriden by appSettings/cloudwatch.groupname -->
+    <groupName value="local"/>
+
+    <!-- This property is overriden by appSettings/cloudwatch.streamname -->
+    <streamName value="main" />
+  </appender>
+  
+</log4net>

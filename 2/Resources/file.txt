@@ -1,0 +1,1 @@
+C:\open\Source\Wilco.UITest\Wilco.UITest.Spec\bin\Debug\Resources\file.txt

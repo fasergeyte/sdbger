@@ -1,0 +1,453 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Devart.Data.PostgreSql.Entity.EF6</name>
+    </assembly>
+    <members>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSchemaConfig.DeleteDatabaseBehaviour">
+            <summary>
+            Determines the behavior of the DeleteDatabase() function.
+            Default value is DeleteDatabaseBehaviour.ModelObjectsOnly.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSchemaConfig.AuthorizationUsername">
+            <summary>
+            The authorization user name.
+            This option affect the CreateDatabase() behavior if the DeleteDatabaseBehaviour option is set to DeleteDatabaseBehaviour.Schema.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSchemaConfig.Extensions">
+            <summary>
+            The list of database extensions.
+            This option affect the CreateDatabase() behavior if the DeleteDatabaseBehaviour option is set to DeleteDatabaseBehaviour.Database.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderTableConfig.Tablespace">
+            <summary>
+            The tablespace for the created table.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderForeignKeyConfig.Enabled">
+            <summary>
+            When set to false, this property makes the provider turn off the generation of foreign keys.
+            This option affects the CreateDatabase() and Code-First Migrations behavior.
+            The default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderForeignKeyConfig.IndexCreation">
+            <summary>
+            When set to true, an index is created to the reference table columns.
+            This option affects the CreateDatabase() behavior.
+            The default value is true.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.DeleteDatabaseBehaviour">
+            <summary>
+            Determines the behavior of the DeleteDatabase() functionality.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.DeleteDatabaseBehaviour.ModelObjectsOnly">
+            <summary>
+            Only the tables that model objects are mapped to are deleted.
+            This is the default value.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.DeleteDatabaseBehaviour.AllSchemaObjects">
+            <summary>
+            All tables will be deleted from schemas that model objects were mapped to.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.DeleteDatabaseBehaviour.Schema">
+            <summary>
+            Entire schema is deleted. If the model contains objects from other schemas, these schemas will be deleted as well.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.DeleteDatabaseBehaviour.Database">
+            <summary>
+            Entire database is deleted.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig">
+            <summary>
+            Devart dotConnect for PostgreSQL Entity Framework provider configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.SqlFormatting">
+            <summary>
+            SQL formatting configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.QueryOptions">
+            <summary>
+            SELECT command options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.DmlOptions">
+            <summary>
+            DML options influence only the INSERT/UPDATE/DELETE commands and Stored Procedure calls.
+            SELECT commands are not affected by these options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.DatabaseScript">
+            <summary>
+            Dynamic database generation/dropping configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.Workarounds">
+            <summary>
+            Common workarounds.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.CodeFirstOptions">
+            <summary>
+            Code-First and Code-First Migrations options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderConfig.SpatialOptions">
+            <summary>
+            Spatial options.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSqlFormattingConfig">
+            <summary>
+            SQL formatting configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSqlFormattingConfig.ExtraSpaces">
+            <summary>
+            Determines whether to insert spaces between operators and operands and after commas.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSqlFormattingConfig.MultilineStatements">
+            <summary>
+            Determines whether to split statements to several lines.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSqlFormattingConfig.Indenting">
+            <summary>
+            Determines whether to indent keywords in multi-line queries.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSqlFormattingConfig.ColumnListStacking">
+            <summary>
+            Disables inserting new lines in the SELECT list.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderQueryConfig">
+            <summary>
+            SELECT command options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderQueryConfig.NoEscapeLike">
+            <summary>
+            The possibility to turn off ESCAPE in LIKE expression.
+            The default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderQueryConfig.CaseInsensitiveLike">
+            <summary>
+            The possibility to turn on the case insensitive comparison mode, when using Linq to Entities extension methods .Contains(), .EndsWith(), .StartsWith().
+            The default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderQueryConfig.CaseInsensitiveComparison">
+            <summary>
+            The possibility to turn on the case insensitive comparison mode, when using LINQ to Entities comparison expression such as "a == b".
+            The default value is false.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.InsertNullBehaviour">
+            <summary>
+            Determines how the NULL values are inserted.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.InsertNullBehaviour.InsertNull">
+            <summary>
+            In this case nulls are inserted explicitly 
+            (for each column that do not have a non-NULL value specified).
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.InsertNullBehaviour.InsertDefaultOrNull">
+            <summary>
+            In this case provider determines if there is a default value specified
+            in the SSDL part of the model, and if it is available,
+            this value is persisted to database.
+            If there is no default value specified,
+            the behaviour is identical to the InsertNull one.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.InsertNullBehaviour.InsertDefaultOrOmit">
+            <summary>
+            In this case provider determines if there is a default value specified
+            in the SSDL part of the model as well.
+            However, if there is no default value specified
+            for a column, it is omitted from the INSERT command completely.
+            </summary>
+        </member>
+        <member name="F:Devart.Data.PostgreSql.Entity.Configuration.InsertNullBehaviour.Omit">
+            <summary>
+            In this case provider simply omits all columns
+            that do not have non-NULL values.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig">
+            <summary>
+            DML options influence only the INSERT/UPDATE/DELETE commands and Stored Procedure calls.
+            SELECT commands are not affected by these options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig.ParametersAsLiterals">
+            <summary>
+            Determines if parameter values are inserted into SQL statements
+            as literals instead of parameters.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig.InsertNullBehaviour">
+            <summary>
+            Determines how the NULL values are inserted.
+            Default value is InsertNullBehaviour.InsertNull.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig.ReuseParameters">
+            <summary>
+            Enables reusing existing parameters instead of creating a new ones.
+            Set this property to true only in case if a large number
+            of the same values is sent to the database.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig.BatchUpdates">
+            <summary>
+            Batch Updates functionality configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderDmlConfig.EmptyUpdates">
+            <summary>
+            When set to false, this property makes the provider turn off the generation of fake updates for parent entities.
+            The default value is true.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderBatchUpdateConfig">
+            <summary>
+            Batch Updates functionality configuration.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderBatchUpdateConfig.Enabled">
+            <summary>
+            Enables or disables Batch Updates functionality.
+            If set to false, other BatchUpdates settings are ignored.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderBatchUpdateConfig.BatchSize">
+            <summary>
+            Specifies the maximal number of commands in a batch.
+            Default value is 30.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderBatchUpdateConfig.AsynchronousBatch">
+            <summary>
+            Specifies whether batches are executed asynchronously
+            (false by default), or new batch will be created and executed
+            only after the successful execution of the previous batch. 
+            Default value is false.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderWorkaroundConfig">
+            <summary>
+            Common workarounds.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderWorkaroundConfig.IgnoreSchemaName">
+            <summary>
+            When set to true, this property makes provider
+            to remove the schema (database) name from all commands and queries,
+            no matter whether Schema specified in the model or not.
+            Command will be using the schema from the connection.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderWorkaroundConfig.IgnoreDboSchemaName">
+            <summary>
+            When set to true, this property makes provider
+            to remove the "dbo" schema (database) name from all commands and queries.
+            Command will be using the schema from the connection.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderWorkaroundConfig.DisableQuoting">
+            <summary>
+            Disables quoting all identifiers in all queries and commands.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderWorkaroundConfig.UseInvariantProviderManifestToken">
+            <summary>
+            If set to true, the invariant string literal is always returned as the provider manifest token.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderCodeFirstConfig">
+            <summary>
+            Code-First and Code-First Migrations options.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderCodeFirstConfig.DisableIndexQuoting">
+            <summary>
+            Disables quoting all indexes in Code-First Migrations.
+            Use DisableIndexQuoting for backward compatibility with old Code-First Migrations projects (migrations created and applied with 5.xx versions of dotConnect for PostgreSQL).
+            Do not use this configuration option with new projects.
+            Default value is false. 
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderCodeFirstConfig.RemoveSchemaFromDefaultConstraintName">
+            <summary>
+            When set to true, the schema (database) name prefix is removed from default constraint names (primary keys, foreign keys) generated by Code-First Migrations.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderCodeFirstConfig.AddTableNameInDefaultIndexName">
+            <summary>
+            When set to true, the table name is added to default index name generated by Code-First Migrations (like 'IX_TableName_ColumnName').
+            When set to false, then default index names will be like 'IX_ColumnName'.
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderCodeFirstConfig.TruncateLongDefaultNames">
+            <summary>
+            When set to true, long default names of indexes, primary keys, and foreign keys,
+            generated by Code-First Migrations, will be truncated and renamed if they exceed the limit of 63 characters.
+            When set to false, an exception will be raised for long default names generated by Code-First Migrations if they are too long.
+            This option does not affect the truncation of long default names generated by Code-First CreateDatabase() and DropDatabase() functionality.
+            They are always truncated if they exceed the limit of 63 characters.
+            However it affects the algorithm of this truncation and renaming of these identifiers.
+            When it is set to true, the names of these identifiers are identical both in Code-First CreateDatabase() and in Code-First Migrations.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig">
+            <summary>
+            Spatial options.
+            </summary> 
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.GeometryDefaultSrid">
+            <summary>
+            Default value is 0.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.GeographyDefaultSrid">
+            <summary>
+            Default value is 4326 (WGS84).
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.AlwaysUseGeometryDefaultSrid">
+            <summary>
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.AlwaysUseGeographyDefaultSrid">
+            <summary>
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.GeographyDistanceUnit">
+            <summary>
+            Default value is 'Meter'.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.GeographyAreaUnit">
+            <summary>
+            Default value is 'SquareMeter'.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.UseGeographySpheroidMeasurement">
+            <summary>
+            Default value is true.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Configuration.PgSqlEntityProviderSpatialConfig.GeometryBufferStyleParameters">
+            <summary>
+            Default value is empty string.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.PgSqlSpatialFunctions">
+            <summary>
+            PostgreSQL PostGIS spatial functions.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.PgSqlJsonFunctions">
+            <summary>
+            PostgreSQL JSON functions.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.PgSqlJsonbFunctions">
+            <summary>
+            PostgreSQL JSONB functions.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.PgSqlTextFunctions">
+            <summary>
+            PostgreSQL full-text search functions.
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Migrations.PgSqlAddColumnConfiguration">
+            <summary>
+            AddColumn operation can be customized with the PgSqlAddColumnConfiguration class.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlAddColumnConfiguration.NotNullConstraintName">
+            <summary>
+            The name of the NOT NULL constraint. By default, an unnamed NOT NULL constraint is created
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlAddColumnConfiguration.CheckConstraintName">
+            <summary>
+            The name of the check constraint.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlAddColumnConfiguration.CheckConstraintColumnRestriction">
+            <summary>
+            The expression of the сheck constraint (for example, “IN (‘A’, ‘B’, ‘C’)”).
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlAddColumnConfiguration.CheckConstraintExpression">
+            <summary>
+            The full expression of the сheck constraint (for example, “COLUMN_NAME IN (‘A’, ‘B’, ‘C’)”).
+            </summary>
+        </member>
+        <member name="T:Devart.Data.PostgreSql.Entity.Migrations.PgSqlCreateIndexConfiguration">
+            <summary>
+            CreateIndex operation can be customized with the PgSqlCreateIndexConfiguration class.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlCreateIndexConfiguration.Expression">
+            <summary>
+            Specifies the expression for the expression-based (function-based) index.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlCreateIndexConfiguration.IndexType">
+            <summary>
+            Determines whether to use B-tree, Hash, GiST or GIN index types.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlCreateIndexConfiguration.UseToTsVectorFunction">
+            <summary>
+            Determines whether to use the TO_TSVECTOR function for conversion of a string column to the TSVECTOR data type for GiST or GIN index types.
+            When set to 'false', index declaration will be like ''CREATE INDEX IndexName ON TableName USING GIST(ColumnName)''.
+            When set to 'true', index declaration will be like ''CREATE INDEX IndexName ON TableName USING GIST(to_tsvector('english', ColumnName)))''.
+            Default value is false.
+            </summary>
+        </member>
+        <member name="P:Devart.Data.PostgreSql.Entity.Migrations.PgSqlCreateIndexConfiguration.ToTsVectorConfigName">
+            <summary>
+            Configuration name for the TO_TSVECTOR function.
+            When UseToTsVectorFunction is set to 'true', index declaration will be like ''CREATE INDEX IndexName ON TableName USING GIST(to_tsvector('ToTsVectorConfigName', ColumnName)))''.
+            </summary>
+        </member>
+    </members>
+</doc>

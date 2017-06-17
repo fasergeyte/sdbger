@@ -1,0 +1,26 @@
+<ConflictsSearchResultRule xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/IntApp.Wilco.Model.Conflicts.Searches.Rules">
+  <Id xmlns="http://schemas.datacontract.org/2004/07/IntApp.Wilco.Model">0</Id>
+  <SchemaVersion xmlns="http://schemas.datacontract.org/2004/07/IntApp.Wilco.Model">30</SchemaVersion>
+  <Filter xmlns:d2p1="http://schemas.datacontract.org/2004/07/IntApp.Wilco.Model.Expressions">
+    <d2p1:AdvancedExpression i:nil="true" />
+    <d2p1:CollectionType>All</d2p1:CollectionType>
+    <d2p1:Conditions>
+      <ConflictsSearchRuleCondition>
+        <d2p1:Left z:Id="i1" i:type="ConflictsSearchRuleClientOperand" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+          <CustomField i:nil="true" />
+          <Property>ClientId</Property>
+        </d2p1:Left>
+        <d2p1:Operator>Equals</d2p1:Operator>
+        <d2p1:Right z:Id="i2" i:type="ConflictsSearchRuleLiteralOperand" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+          <DisplayValue>{clientName}</DisplayValue>
+          <Value xmlns:d6p1="http://www.w3.org/2001/XMLSchema" i:type="d6p1:int">{clientId}</Value>
+        </d2p1:Right>
+        <ConditionType>Expression</ConditionType>
+      </ConflictsSearchRuleCondition>
+    </d2p1:Conditions>
+  </Filter>
+  <Highlight>true</Highlight>
+  <OnByDefault>false</OnByDefault>
+  <Rank>1000</Rank>
+  <ResultRuleType>Rank</ResultRuleType>
+</ConflictsSearchResultRule>
