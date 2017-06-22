@@ -26,7 +26,12 @@ internal class Program
 
     public static void Main(String[] args)
     {
-        LoadFromPath(path1);
+//        var ass = Assembly.LoadFrom(path1);
+//        var as2 = Assembly.LoadFrom(path2);
+//        var as3 = Assembly.LoadFile(path2);
+        var ass1 = LoadAssembly(path1);
+        var ass2 = LoadAssembly(path2);
+
         //LoadFromPath(path1Folder);
         //CoreExtensions.Host.InitializeService();
 //        String pathToTestLibrary = @"C:\open_u\ConsoleApplication2\Sdber\bin\Debug\Sdber.exe"; //get from command line args
@@ -146,10 +151,10 @@ internal class Program
         //AppDomain.Unload(dom);
     }
 
-    public static Assembly LoadAssembly(string path)
-    {
-        return Assembly.LoadFrom(path);
-    }
+//    public static Assembly LoadAssembly(string path)
+//    {
+//        return Assembly.LoadFrom(path);
+//    }
 
     private static int i = 1;
 
@@ -170,37 +175,15 @@ internal class Program
         return assembly; 
     }
 
-    public static Assembly LoadFromPath(string path)
+    public static Assembly LoadAssembly(string path)
     {
-        var domainName = "some" + ++i;
-        //AppDomain dom = AppDomain.CreateDomain("some" + ++i);
-        Assembly spec = null;
-        AppDomain newDomain = AppDomain.CreateDomain(domainName);//, new Evidence(), path, "", true);
-
-        newDomain.AssemblyResolve += (sender, e) =>
-        {
-            return Assembly.LoadFile(e.Name);
-        };
-
-        //RunSpec(path1);
-        var a = newDomain.Load(path1);
-        a.GetTypes();
-
-        /*foreach (string dll in Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories))
-        {
-            try
-            {
-                Assembly loadedAssembly = newDomain.Load(dll);
-            }
-            catch (FileLoadException loadEx)
-            { } // The Assembly has already been loaded.
-            catch (BadImageFormatException imgEx)
-            { } // If a BadImageFormatException exception is thrown, the file is not an assembly.
-
-        } // foreach dl*/
-        var b  = newDomain.ReflectionOnlyGetAssemblies();
-
-        return spec;
+        var domainName = "domain" + ++i;
+        AppDomain domain = AppDomain.CreateDomain(domainName);
+        var type = typeof(Proxy);
+        var value = (Proxy)domain.CreateInstanceAndUnwrap(
+            type.Assembly.FullName,
+            type.FullName);
+        return value.GetAssembly(path);
     }
 
     static Assembly MyAssemblyResolveHandler(object source, ResolveEventArgs e)
@@ -211,6 +194,43 @@ internal class Program
         return Assembly.Load(e.Name);
     }
 
+//    public static Assembly LoadAssambly2(string path)
+//    {
+//        
+//        AppDomain domain = AppDomain.CreateDomain("newDomain");//, new Evidence(), path, "", true);
+//        //domain.Load(path1);
+////        AppDomain domain = AppDomain.CreateDomain("MyDomain", adevidence, domaininfo);
+//        //domain.
+//        //domain.Load()
+//        Type type = typeof(Proxy);
+//        var value = (Proxy)domain.CreateInstanceAndUnwrap(
+//            type.Assembly.FullName,
+//            type.FullName);
+//        value.GetAssembly(path1);
+//        Assembly spec = null;
+//        foreach (string dll in dlls)
+//        {
+//            try
+//            {
+//                //Assembly loadedAssembly = domain.Load(dll);
+//                //loadedAssembly.GetTypes();
+//                //var a = domain.asse;
+//                if (dll.EndsWith("Wilco.UITest.Spec.dll"))
+//                {
+//                    Assembly loadedAssembly = domain.Load(dll);
+//                    spec = loadedAssembly;
+//                }
+//            }
+//            catch (FileLoadException loadEx)
+//            { } // The Assembly has already been loaded.
+//            catch (BadImageFormatException imgEx)
+//            { } // If a BadImageFormatException exception is thrown, the file is not an assembly.
+//
+//        } // foreach dll
+//
+//        return spec;
+//    }    
+//    
     public static Assembly LoadAllBinDirectoryAssemblies(string path)
     {
         Assembly spec = null;
@@ -219,7 +239,7 @@ internal class Program
             try
             {
                 Assembly loadedAssembly = Assembly.LoadFile(dll);
-                loadedAssembly.GetTypes();
+                //loadedAssembly.GetTypes();
                 if (dll.EndsWith("Wilco.UITest.Spec.dll"))
                 {
                     spec = loadedAssembly;
@@ -231,6 +251,7 @@ internal class Program
             { } // If a BadImageFormatException exception is thrown, the file is not an assembly.
 
         } // foreach dll
+        var a = spec.GetTypes();
 
         return spec;
     }
@@ -242,7 +263,9 @@ internal class Program
     {
         try
         {
-            return Assembly.LoadFile(assemblyPath);
+            var a = Assembly.LoadFrom(assemblyPath);
+            a.GetTypes();
+            return a;
         }
         catch (Exception)
         {

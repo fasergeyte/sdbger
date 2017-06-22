@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication2", "Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sdber", "Sdber\Sdber.csproj", "{1ACAD095-7361-445E-B64E-4C5AD37AC971}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDBGer", "SDBGer\SDBGer.csproj", "{78D9C447-E92C-4B89-AB45-71566DD1921E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1ACAD095-7361-445E-B64E-4C5AD37AC971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ACAD095-7361-445E-B64E-4C5AD37AC971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ACAD095-7361-445E-B64E-4C5AD37AC971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78D9C447-E92C-4B89-AB45-71566DD1921E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D9C447-E92C-4B89-AB45-71566DD1921E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D9C447-E92C-4B89-AB45-71566DD1921E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D9C447-E92C-4B89-AB45-71566DD1921E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
