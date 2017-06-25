@@ -19,12 +19,19 @@
 
         public static void InitDomain(string assemblyPath)
         {
-            File.Copy(Path.Combine(Path.GetDirectoryName(assemblyPath), "Log4NetConfiguration.xml"), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4NetConfiguration.xml"), true);
-            File.Copy(Path.Combine(Path.GetDirectoryName(assemblyPath), "Log4NetConfiguration.xml"), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4NetConfiguration.xml"), true);
+//            File.Copy(Path.Combine(Path.GetDirectoryName(assemblyPath), "Log4NetConfiguration.xml"), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4NetConfiguration.xml"), true);
+//            File.Copy(Path.Combine(Path.GetDirectoryName(assemblyPath), "EntityFramework.dll"), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EntityFramework.dll"), true);
+
             var stp = new AppDomainSetup();
             stp.ConfigurationFile = assemblyPath + ".config";
-            runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
+            stp.ApplicationBase = Path.GetDirectoryName(assemblyPath);
 
+            foreach (string dll in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"))
+            {
+                File.Copy(dll, Path.Combine(stp.ApplicationBase, Path.GetFileName(dll)), true);
+            }
+
+            runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
             var type = typeof(SpecflowManager);
 
             var value = (SpecflowManager)runnerDomain.CreateInstanceAndUnwrap(
