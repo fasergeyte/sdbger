@@ -209,5 +209,12 @@
         }
 
         #endregion
+
+        public object GetDriver()
+        {
+            var core = this.testsAssembly.GetReferencedAssemblies()
+                .First(a => a.FullName.Contains("Wilco.UITest.Core"));
+            return Assembly.Load(core).GetTypes().First(t => t.Name.Contains("WebBrowser")).GetPropertyValue<object>("Driver");
+        }
     }
 }

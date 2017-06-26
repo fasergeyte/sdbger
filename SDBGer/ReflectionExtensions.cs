@@ -22,6 +22,20 @@
             return (TOutput)fieldInfo.GetValue(target);
         }
 
+        public static TOutput GetPropertyValue<TOutput>(this Type target, string propertyName)
+        {
+            var fieldInfo = target.GetProperty(
+                propertyName,
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (fieldInfo == null)
+            {
+                throw new Exception(string.Format("Static field '{0}' in Class '{1}' is not found.", propertyName, target));
+            }
+
+            return (TOutput)fieldInfo.GetValue(null);
+        }
+
         public static void InvokeMethod(this object target, string methodName, params object[] parameters)
         {
             var type = target.GetType();

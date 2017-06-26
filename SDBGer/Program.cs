@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Security.Policy;
 
@@ -17,6 +18,11 @@
 
         #region Public Methods and Operators
 
+        public static void UnloadDomain()
+        {
+            AppDomain.Unload(runnerDomain);
+        }
+
         public static void InitDomain(string assemblyPath)
         {
 //            File.Copy(Path.Combine(Path.GetDirectoryName(assemblyPath), "Log4NetConfiguration.xml"), Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log4NetConfiguration.xml"), true);
@@ -26,7 +32,7 @@
             stp.ConfigurationFile = assemblyPath + ".config";
             stp.ApplicationBase = Path.GetDirectoryName(assemblyPath);
 
-            foreach (string dll in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"))
+            foreach (string dll in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll").Concat(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.exe")))
             {
                 File.Copy(dll, Path.Combine(stp.ApplicationBase, Path.GetFileName(dll)), true);
             }
@@ -60,6 +66,8 @@
             specManager.InitScenario("The managed user with able to log in");
             specManager.BeforeScenario();
             specManager.RunStep("the user has logged in as admin", "given");
+            var driver = specManager.GetDriver();
+            UnloadDomain();
         }
 
         #endregion
