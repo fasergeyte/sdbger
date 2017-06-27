@@ -38,7 +38,6 @@
             }
 
             runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
-
             var type = typeof(SpecflowManager);
 
             var value = (SpecflowManager)runnerDomain.CreateInstanceAndUnwrap(
@@ -47,7 +46,7 @@
                 false,
                 BindingFlags.Default,
                 null,
-                new object[] { assemblyPath, null },
+                new object[] { assemblyPath },
                 null,
                 null);
 
@@ -67,7 +66,6 @@
             specManager.InitScenario("The managed user with able to log in");
             specManager.BeforeScenario();
             specManager.RunStep("the user has logged in as admin", "given");
-            
             var driver = specManager.GetDriver();
             UnloadDomain();
         }

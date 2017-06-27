@@ -32,8 +32,6 @@
 
         private readonly RuntimeConfiguration runtimeConfiguration;
 
-        private readonly Storage storage;
-
         private readonly TestRunner testRunner;
 
         private readonly Assembly testsAssembly;
@@ -50,10 +48,8 @@
 
         #region Constructors and Destructors
 
-        public SpecflowManager(string assemblyPath, Storage storage = null)
+        public SpecflowManager(string assemblyPath)
         {
-            this.storage = storage ?? new Storage();
-
             CoreExtensions.Host.InitializeService();
 
             this.testRunner = (TestRunner)TestRunnerManager.GetTestRunner();
@@ -91,14 +87,6 @@
         public void BeforeTestRun()
         {
             this.executionEngine.InvokeMethod("OnTestRunnerStart");
-        }
-
-        public object GetDriver()
-        {
-            var core = this.testsAssembly.GetReferencedAssemblies()
-                .First(a => a.FullName.Contains("Wilco.UITest.Core"));
-            this.storage.data.Add("driver", Assembly.Load(core).GetTypes().First(t => t.Name.Contains("WebBrowser")).GetPropertyValue<object>("Driver"));
-            return this.storage;
         }
 
         public void InitFeature(string featureName, string nspase = null)
@@ -221,5 +209,12 @@
         }
 
         #endregion
+
+        public object GetDriver()
+        {
+            var core = this.testsAssembly.GetReferencedAssemblies()
+                .First(a => a.FullName.Contains("Wilco.UITest.Core"));
+            return Assembly.Load(core).GetTypes().First(t => t.Name.Contains("WebBrowser")).GetPropertyValue<object>("Driver");
+        }
     }
 }
