@@ -1,2 +1,0 @@
-Name|Affiliation|Relationship|Type|Notes
-IBM|Adverse|Debitor|Company|Notes
