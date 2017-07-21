@@ -27,12 +27,12 @@
         private static void ClearSteps()
         {
             scenarioBuffer.Clear();
-            Console.WriteLine("Steps was cleared.");
+            Log.WriteLine("Steps was cleared.");
         }
 
         private static void ExecCommand(string command)
         {
-            Console.IsCursorBlinking = false;
+            Log.IsCursorBlinking = false;
 
             var match = Regex.Match(command, "\\s*([^\\s]+)(.*)");
             var beforeSpace = match.Groups[1].Value.Trim().ToLower();
@@ -40,26 +40,28 @@
             switch (beforeSpace)
             {
                 case Commands.BufferSize:
-                    Console.BufferSize = int.Parse(parametr);
+                    Log.BufferSize = int.Parse(parametr);
                     break;
                 case Commands.ClearSteps:
-                    ClearSteps();
-                    Console.WriteLine("Anonymous scenario was cleared");
+                case Commands.SContext:
+                    var values = parametr.Split('=');
+                    r.SetValueToScenarioContext(values[0], values[1]);
+                    Log.WriteLine("Anonymous scenario was cleared");
                     break;
                 case Commands.ClearTags:
                     tags.Clear();
                     r.InitAnonymousFeature(tags);
-                    Console.WriteLine("Tags for anonymous scenario was cleared");
+                    Log.WriteLine("Tags for anonymous scenario was cleared");
                     break;
                 case Commands.AutoClear:
                     autoClearIsEnabled = bool.Parse(parametr);
-                    Console.WriteLine("auto clear was change to " + autoClearIsEnabled);
+                    Log.WriteLine("auto clear was change to " + autoClearIsEnabled);
                     break;
                 case Commands.Clear:
                     tags.Clear();
-                    Console.WriteLine("Tags for anonymous scenario was cleared");
+                    Log.WriteLine("Tags for anonymous scenario was cleared");
                     ClearSteps();
-                    Console.WriteLine("Anonymous scenario was cleared");
+                    Log.WriteLine("Anonymous scenario was cleared");
                     break;
                 case Commands.RunScenario:
                     if (string.IsNullOrEmpty(parametr))
@@ -147,7 +149,7 @@
 
                     break;
                 default:
-                    Console.WriteLine("Unknown command: {0}", command);
+                    Log.WriteLine("Unknown command: {0}", command);
                     break;
             }
         }
@@ -165,20 +167,22 @@
             }
             catch (Exception e)
             {
-                Console.Red(e);
+                Log.Red(e);
             }
+
+            Log.InitializeCursoreAnimation();
 
             while (true)
             {
                 try
                 {
-                    System.Console.Write("> ");
-                    Console.IsCursorBlinking = true;
-                    ProcessLine(Console.ReadLine());
+                    Console.Write("> ");
+                    Log.IsCursorBlinking = true;
+                    ProcessLine(Log.ReadLine());
                 }
                 catch (Exception e)
                 {
-                    Console.Red(e);
+                    Log.Red(e);
                     if (autoClearIsEnabled)
                     {
                         ClearSteps();
@@ -243,6 +247,8 @@
             public const string RunFeature = "-runfeature";
 
             public const string RunScenario = "-runscenario";
+
+            public const string SContext = "-context";
 
             public const string SetNewChrome = "-chrome";
 

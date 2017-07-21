@@ -146,7 +146,7 @@
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Feature '{0}' is not found.", rd.CurrentFeature);
+                    Log.WriteLine("Feature '{0}' is not found.", rd.CurrentFeature);
                 }
             }
 
@@ -158,7 +158,7 @@
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Feature '{0}' is not found.", rd.CurrentScenario);
+                    Log.WriteLine("Feature '{0}' is not found.", rd.CurrentScenario);
                 }
             }
 
@@ -207,7 +207,7 @@
                         return true;
                     }
 
-                    Console.WriteLine("Item from feature context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
+                    Log.WriteLine("Item from feature context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
                     return false;
                 }
                 ).ToDictionary(k => k.Key, v => v.Value);
@@ -221,7 +221,7 @@
                         return true;
                     }
 
-                    Console.WriteLine("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
+                    Log.WriteLine("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
                     return false;
                 }
                 ).ToDictionary(k => k.Key, v => v.Value);
@@ -292,6 +292,7 @@
                 feature = features.First();
             }
 
+            // TODO: make clearly
             Assert.NotNull(feature, "Feature '{0}' is not found.", featureNameOrClassName);
 
             this.currentFeatureType = feature;
@@ -384,9 +385,18 @@
             this.webBrowser.GetMemberValue<ChromeDriver>("Driver");
         }
 
-        public void SetStatusForTest(TestStatus value)
+        public void SetValueToScenarioContext(string key, string value)
         {
-            this.contextManager.ScenarioContext.SetMemberValue("TestStatus", value);
+            if (ScenarioContext.Current.ContainsKey(key))
+            {
+                ScenarioContext.Current[key] = value;
+                Log.WriteLine("Key '{0}' was changed to '{1}'.", key, value);
+            }
+            else
+            {
+                ScenarioContext.Current.Add(key, value);
+                Log.WriteLine("Key '{0}' was added with value '{1}'.", key, value);
+            }
         }
 
         #endregion
@@ -623,6 +633,11 @@
             #endregion
 
             return (TestRunner)testRunner;
+        }
+
+        private void SetStatusForTest(TestStatus value)
+        {
+            this.contextManager.ScenarioContext.SetMemberValue("TestStatus", value);
         }
 
         #endregion

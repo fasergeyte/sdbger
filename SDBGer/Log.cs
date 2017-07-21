@@ -6,7 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public static class Console
+    public static class Log
     {
         #region Static Fields
 
@@ -20,17 +20,16 @@
 
         #region Constructors and Destructors
 
-        static Console()
+        static Log()
         {
-            InitializeCursoreAnimation();
             BufferSize = 1536;
-            inputStream = inputStream ?? System.Console.OpenStandardInput();
+            inputStream = inputStream ?? Console.OpenStandardInput();
             buffer = new byte[BufferSize];
 
-            System.Console.CancelKeyPress += new ConsoleCancelEventHandler((s, e) =>
+            Console.CancelKeyPress += new ConsoleCancelEventHandler((s, e) =>
             {
-                System.Console.WriteLine("Are you sure to close?[y/n]");
-                var a = System.Console.ReadLine();
+                Console.WriteLine("Are you sure to close?[y/n]");
+                var a = Console.ReadLine();
                 if (a != "y")
                 {
                     e.Cancel = true;
@@ -66,7 +65,7 @@
             }
             set
             {
-                System.Console.CursorVisible = value;
+                Console.CursorVisible = value;
                 isCursorBlinking = value;
             }
         }
@@ -77,7 +76,7 @@
 
         public static void Green(object value)
         {
-            System.Console.Beep();
+            Console.Beep();
             Print(value, ConsoleColor.Green);
         }
 
@@ -89,7 +88,7 @@
 
         public static void Red(object value)
         {
-            System.Console.Beep();
+            Console.Beep();
             Print(value, ConsoleColor.Red);
         }
 
@@ -102,7 +101,7 @@
 
         #region Methods
 
-        private static void InitializeCursoreAnimation()
+        public static void InitializeCursoreAnimation()
         {
             Task.Factory.StartNew(() =>
             {
@@ -110,12 +109,12 @@
                 {
                     if (IsCursorBlinking)
                     {
-                        System.Console.CursorVisible = !System.Console.CursorVisible;
+                        Console.CursorVisible = !Console.CursorVisible;
                         Thread.Sleep(500);
                     }
                     else
                     {
-                        System.Console.CursorVisible = false;
+                        Console.CursorVisible = false;
                     }
                 }
             });
@@ -125,21 +124,21 @@
         {
             if (color != null)
             {
-                System.Console.ForegroundColor = color.Value;
+                Console.ForegroundColor = color.Value;
             }
 
             if (value.GetType().IsInstanceOfType(typeof(Exception)))
             {
                 Exception ex = (Exception)value;
-                System.Console.WriteLine(ex.Message);
-                System.Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
             else
             {
-                System.Console.WriteLine(value);
+                Console.WriteLine(value);
             }
 
-            System.Console.ResetColor();
+            Console.ResetColor();
         }
 
         #endregion
