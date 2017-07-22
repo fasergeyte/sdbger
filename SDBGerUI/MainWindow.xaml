@@ -3,15 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="768" Width="1024">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF3C3C3C"/>
-                <GradientStop Color="#FF191919" Offset="1"/>
+                <GradientStop Color="#FF3C3C3C" />
+                <GradientStop Color="#FF191919" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
-        <TextBox x:Name="StepsInput" Height="376" Margin="10,25,10,0" TextWrapping="Wrap" Text="Hello World!" VerticalAlignment="Top" Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" ForceCursor="True" FontFamily="Consolas" Cursor="" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False" AcceptsReturn="True" AcceptsTab="True" FontStretch="Expanded"/>
-        <TextBox x:Name="LogOutput" Height="252.47" Margin="10,439.51,10,0" TextWrapping="Wrap" Text="LOG HERE" VerticalAlignment="Top" Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" FontFamily="Consolas" Cursor="" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False" FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False" IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True"/>
-        <Button x:Name="RunButton" Content="Run" Margin="0,407,18,0" VerticalAlignment="Top" RenderTransformOrigin="-0.031,1.203" HorizontalAlignment="Right" Width="75" Click="Button_Click"/>
-
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <TextBox Grid.Row="0" x:Name="StepsInput" Height="auto" Margin="5" TextWrapping="Wrap" Text="Hello World!"
+                     Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" ForceCursor="True"
+                     FontFamily="Consolas" Cursor="" ScrollViewer.CanContentScroll="True"
+                     VerticalScrollBarVisibility="Auto" UseLayoutRounding="False" AcceptsReturn="True"
+                     AcceptsTab="True" FontStretch="Expanded" />
+            <Button Grid.Row="1" x:Name="RunButton" Content="Run" Margin="5" HorizontalAlignment="Right" Width="75"
+                    Height="30" Click="Button_Click" />
+        </Grid>
+        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Background="Black"
+                      ResizeDirection="Rows" />
+        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5" TextWrapping="Wrap" Text="LOG HERE"
+                 Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" FontFamily="Consolas" Cursor=""
+                 ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False"
+                 FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False"
+                 IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True" />
     </Grid>
 </Window>
