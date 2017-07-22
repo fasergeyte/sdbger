@@ -24,6 +24,11 @@
 
         #region Methods
 
+        private static void Build()
+        {
+            SolutionBuilder.Build(ConfigurationManager.AppSettings["TestsProjectPath"]);
+        }
+
         private static void ClearSteps()
         {
             scenarioBuffer.Clear();
@@ -126,31 +131,41 @@
                     }
                     break;
                 case Commands.Release:
-                    r.SaveRunningData();
-                    r.RealiseAssemblies();
+                    Release();
                     break;
                 case Commands.SetNewChrome:
                     r.SetNewChrome();
                     break;
                 case Commands.Load:
-
-                    lastPath = (string.IsNullOrEmpty(parametr) ? lastPath : parametr.Replace("\\", "/")) ?? ConfigurationManager.AppSettings["TestsPath"];
-
-                    r.InitDomain(lastPath);
-                    r.BeforeTestRun();
-                    r.InitAnonymousScenario();
-                    r.ApplyRunningData();
-
-                    if (!r.IsChromeDriverInitialized)
-                    {
-                        r.BeforeFeature();
-                        r.BeforeScenario();
-                    }
-
+                    Load(parametr);
+                    break;
+                case Commands.Rebuild:
+                    Release();
+                    Build();
+                    Load();
+                    break;
+                case Commands.Build:
+                    Build();
                     break;
                 default:
                     Log.WriteLine("Unknown command: {0}", command);
                     break;
+            }
+        }
+
+        private static void Load(string parametr = null)
+        {
+            lastPath = (string.IsNullOrEmpty(parametr) ? lastPath : parametr.Replace("\\", "/")) ?? ConfigurationManager.AppSettings["TestsPath"];
+
+            r.InitDomain(lastPath);
+            r.BeforeTestRun();
+            r.InitAnonymousScenario();
+            r.ApplyRunningData();
+
+            if (!r.IsChromeDriverInitialized)
+            {
+                r.BeforeFeature();
+                r.BeforeScenario();
             }
         }
 
@@ -163,7 +178,7 @@
 
             try
             {
-                ExecCommand("-load");
+                ExecCommand("-Load");
             }
             catch (Exception e)
             {
@@ -212,6 +227,13 @@
             scenarioBuffer.AppendLine(line);
         }
 
+        private static void Release()
+        {
+            r.SaveRunningData();
+            r.RealiseAssemblies();
+            return;
+        }
+
         #endregion
 
         private static class Commands
@@ -226,6 +248,8 @@
 
             public const string BufferSize = "-buffersize";
 
+            public const string Build = "-build";
+
             public const string Cancel = "-cancel";
 
             public const string Clear = "-clear";
@@ -239,6 +263,8 @@
             public const string InitScenario = "-initscenario";
 
             public const string Load = "-load";
+
+            public const string Rebuild = "-rebuild";
 
             public const string Release = "-rel";
 
