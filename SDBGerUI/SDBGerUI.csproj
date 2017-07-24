@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,6 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SDBGer\SDBGer.csproj">
+      <Project>{78d9c447-e92c-4b89-ab45-71566dd1921e}</Project>
+      <Name>SDBGer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

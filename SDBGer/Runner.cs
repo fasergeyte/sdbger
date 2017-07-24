@@ -8,7 +8,7 @@
     using System.Security.Policy;
     using System.Text.RegularExpressions;
 
-    internal class Runner
+    public class Runner
     {
         #region Constants
 
