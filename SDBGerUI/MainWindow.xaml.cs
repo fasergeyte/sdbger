@@ -31,6 +31,14 @@
             //TextWriterTraceListener myWriter = new TextWriterTraceListener(Console.Out);
 
             //Debug.Listeners.Add(myWriter);
+
+            // Autoscroll for log.
+            LogOutput.TextChanged += (sender, e) =>
+            {
+                LogOutput.Focus();
+                LogOutput.CaretIndex = LogOutput.Text.Length;
+                LogOutput.ScrollToEnd();
+            };
         }
 
         #endregion
