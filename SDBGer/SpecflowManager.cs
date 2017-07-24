@@ -297,7 +297,7 @@
 
             this.currentFeatureType = feature;
 
-            // get tags of feature
+            // get Tags of feature
             var tags = feature.GetCustomAttributes(typeof(CategoryAttribute)).Select(a => ((CategoryAttribute)a).Name).ToArray();
 
             FeatureInfo featureInfo = new FeatureInfo(new CultureInfo("en-US"), featureNameOrClassName, "", ProgrammingLanguage.CSharp, tags);

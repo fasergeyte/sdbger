@@ -40,6 +40,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="RunnerManager.cs" />
     <Compile Include="SolutionBuilder.cs" />
     <Compile Include="SpecflowManager.cs" />
     <Compile Include="RunningData.cs" />

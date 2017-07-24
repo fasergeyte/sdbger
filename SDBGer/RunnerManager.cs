@@ -1,118 +1,102 @@
 ﻿namespace SDBGer
 {
-    using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
 
-    internal class Program
+    public class RunnerManager
     {
-        #region Static Fields
+        #region Fields
 
-        private static readonly StringBuilder scenarioBuffer = new StringBuilder();
+        private readonly Runner r;
 
-        private static readonly List<string> tags = new List<string>();
+        private bool autoClearIsEnabled = true;
 
-        private static bool autoClearIsEnabled = true;
-
-        private static string lastPath;
-
-        private static Runner r;
+        private string lastPath;
 
         #endregion
 
-        #region Methods
+        #region Constructors and Destructors
 
-        private static void Build()
+        public RunnerManager()
+        {
+            this.ScenarioBuffer = new StringBuilder();
+            this.Tags = new List<string>();
+            this.r = new Runner();
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public StringBuilder ScenarioBuffer { get; private set; }
+
+        public List<string> Tags { get; private set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void Build()
         {
             SolutionBuilder.Build(ConfigurationManager.AppSettings["TestsProjectPath"]);
         }
 
-        private static void ClearSteps()
+        public void ClearSteps()
         {
-            scenarioBuffer.Clear();
+            ScenarioBuffer.Clear();
             Log.WriteLine("Steps was cleared.");
         }
 
-        private static void ExecCommand(string command)
+        public void ExecuteCommand(string command, params object[] parameters)
         {
-            Log.IsCursorBlinking = false;
-
-            var match = Regex.Match(command, "\\s*([^\\s]+)(.*)");
-            var beforeSpace = match.Groups[1].Value.Trim().ToLower();
-            var parametr = match.Groups[2].Value.Trim();
-            switch (beforeSpace)
+            switch (command)
             {
-                case Commands.BufferSize:
-                    Log.BufferSize = int.Parse(parametr);
-                    break;
                 case Commands.ClearSteps:
+                    ScenarioBuffer.Clear();
+                    break;
                 case Commands.SContext:
-                    var values = parametr.Split('=');
-                    r.SetValueToScenarioContext(values[0], values[1]);
+                    r.SetValueToScenarioContext((string)parameters[0], (string)parameters[1]);
                     Log.WriteLine("Anonymous scenario was cleared");
                     break;
                 case Commands.ClearTags:
-                    tags.Clear();
-                    r.InitAnonymousFeature(tags);
+                    Tags.Clear();
+                    r.InitAnonymousFeature(Tags);
                     Log.WriteLine("Tags for anonymous scenario was cleared");
                     break;
                 case Commands.AutoClear:
-                    autoClearIsEnabled = bool.Parse(parametr);
+                    autoClearIsEnabled = (bool)parameters[0];
                     Log.WriteLine("auto clear was change to " + autoClearIsEnabled);
                     break;
                 case Commands.Clear:
-                    tags.Clear();
+                    Tags.Clear();
                     Log.WriteLine("Tags for anonymous scenario was cleared");
-                    ClearSteps();
+                    this.ClearSteps();
                     Log.WriteLine("Anonymous scenario was cleared");
                     break;
                 case Commands.RunScenario:
-                    if (string.IsNullOrEmpty(parametr))
-                    {
-                        r.BeforeFeature();
-                        r.BeforeScenario();
-                        r.RunScenario();
-                    }
-                    else
-                    {
-                        var parameters = parametr.Split(new[] { "--" }, StringSplitOptions.None);
-                        switch (parameters.Length)
-                        {
-                            case 1:
-                                r.RunScenario(parameters[0]);
-                                break;
-                            case 2:
-                                r.RunScenario(parameters[1], parameters[0]);
-                                break;
-                            case 3:
-                                r.RunScenario(parameters[2], parameters[1], parameters[0]);
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-                    }
+                    r.RunScenario((string)parameters[2], (string)parameters[1], (string)parameters[0]);
                     break;
                 case Commands.InitScenario:
-                    if (string.IsNullOrEmpty(parametr))
+                    if (!parameters.Any())
                     {
                         r.InitAnonymousScenario();
                     }
                     else
                     {
-                        r.InitScenario(parametr);
+                        r.InitScenario((string)parameters[0]);
                     }
 
                     break;
                 case Commands.InitFeature:
-                    if (string.IsNullOrEmpty(parametr))
+                    if (!parameters.Any())
                     {
-                        r.InitAnonymousFeature(tags);
+                        r.InitAnonymousFeature(Tags);
                     }
                     else
                     {
-                        r.InitFeature(parametr);
+                        r.InitFeature((string)parameters[0]);
                     }
 
                     break;
@@ -123,12 +107,13 @@
                     r.BeforeScenario();
                     break;
                 case Commands.Run:
-                    r.UseLastOrInitAnonymousFeature(tags);
-                    r.RunSteps(scenarioBuffer.ToString());
+                    r.UseLastOrInitAnonymousFeature(Tags);
+                    r.RunSteps(ScenarioBuffer.ToString());
                     if (autoClearIsEnabled)
                     {
                         ClearSteps();
                     }
+
                     break;
                 case Commands.Release:
                     Release();
@@ -137,17 +122,15 @@
                     r.SetNewChrome();
                     break;
                 case Commands.Load:
-                    Load(parametr);
+                    Load((string)(parameters.Any() ? parameters[0] : null));
                     break;
                 case Commands.Rebuild:
                     Release();
                     Build();
                     Load();
-                    Console.Beep();
                     break;
                 case Commands.Build:
                     Build();
-                    Console.Beep();
                     break;
                 default:
                     Log.WriteLine("Unknown command: {0}", command);
@@ -155,9 +138,10 @@
             }
         }
 
-        private static void Load(string parametr = null)
+        public void Load(string parametr = null)
         {
-            lastPath = (string.IsNullOrEmpty(parametr) ? lastPath : parametr.Replace("\\", "/")) ?? ConfigurationManager.AppSettings["TestsPath"];
+            lastPath = (string.IsNullOrEmpty(parametr) ? lastPath : parametr.Replace("\\", "/")) ??
+                       ConfigurationManager.AppSettings["TestsPath"];
 
             r.InitDomain(lastPath);
             r.BeforeTestRun();
@@ -171,65 +155,28 @@
             }
         }
 
-        private static void Main(string[] args)
+        public void ProcessLine(string line)
         {
-            // Kill chrome driver
-            SpecflowManager.KillChromeDriver();
-
-            r = new Runner();
-
-            try
-            {
-                ExecCommand("-Load");
-            }
-            catch (Exception e)
-            {
-                Log.Red(e);
-            }
-
-            Log.InitializeCursoreAnimation();
-
-            while (true)
-            {
-                try
-                {
-                    Console.Write("> ");
-                    Log.IsCursorBlinking = true;
-                    ProcessLine(Log.ReadLine());
-                }
-                catch (Exception e)
-                {
-                    Log.Red(e);
-                    if (autoClearIsEnabled)
-                    {
-                        ClearSteps();
-                    }
-                }
-            }
-        }
-
-        private static void ProcessLine(string line)
-        {
-            //line = line.Trim();
+            // line = line.Trim();
             line = line.TrimStart();
 
             if (line.Length > 0 && line[0] == '-')
             {
-                ExecCommand(line);
+                this.ExecuteCommand(line);
                 return;
             }
 
             // adds Tags
             if (line.Length > 0 && line.TrimStart()[0] == '@')
             {
-                tags.Add(line.Trim().Substring(1));
+                Tags.Add(line.Trim().Substring(1));
                 return;
             }
 
-            scenarioBuffer.AppendLine(line);
+            ScenarioBuffer.AppendLine(line);
         }
 
-        private static void Release()
+        public void Release()
         {
             r.SaveRunningData();
             r.RealiseAssemblies();
@@ -238,7 +185,7 @@
 
         #endregion
 
-        private static class Commands
+        public static class Commands
         {
             #region Constants
 
