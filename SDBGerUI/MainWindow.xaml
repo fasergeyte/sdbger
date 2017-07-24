@@ -20,7 +20,7 @@
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
             <TextBox Grid.Row="0" x:Name="StepsInput" Height="auto" Margin="5" TextWrapping="Wrap"
-                     Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" ForceCursor="True"
+                     Background="Black" SelectionBrush="#FF74BAFF" Foreground="White" ForceCursor="True"
                      FontFamily="Consolas" Cursor="" ScrollViewer.CanContentScroll="True"
                      VerticalScrollBarVisibility="Auto" UseLayoutRounding="False" AcceptsReturn="True"
                      AcceptsTab="True" FontStretch="Expanded" />
@@ -31,9 +31,9 @@
                 <Button Grid.Row="1" x:Name="ReleaseButton" Content="Release" Margin="5" HorizontalAlignment="Left" Width="75"
                     Height="30" Click="ReleaseButton_OnClick_Click" />
                 <Button Grid.Row="1" x:Name="BuildButton" Content="Build" Margin="5" HorizontalAlignment="Left" Width="75"
-                    Height="30" Click="Build_Click" IsEnabled="False" />
+                    Height="30" Click="Build_Click" />
                 <Button Grid.Row="1" x:Name="RebuildButton" Content="Rebuild" Margin="5" HorizontalAlignment="Left" Width="75"
-                    Height="30" Click="Rebuild_Click" IsEnabled="False" />
+                    Height="30" Click="Rebuild_Click" />
                 <Button Grid.Row="1" x:Name="BeforeScenarioButton" Content="BeforeScenario" Margin="5" HorizontalAlignment="Right" Width="95"
                     Height="30" Click="BeforeScenario_Click" />
                 <Button Grid.Row="1" x:Name="BeforeFeatureButton" Content="BeforeFeature" Margin="5" HorizontalAlignment="Right" Width="95"
@@ -44,10 +44,11 @@
         </Grid>
         <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Background="Black"
                       ResizeDirection="Rows" />
-        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5" TextWrapping="Wrap" Text="LOG HERE"
-                 Background="Black" SelectionBrush="#FFB1C0CF" Foreground="White" FontFamily="Consolas" Cursor=""
+        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5,5,5,25.96" TextWrapping="Wrap"
+                 Background="Black" SelectionBrush="#FF74BAFF" Foreground="White" FontFamily="Consolas" Cursor=""
                  ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False"
                  FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False"
-                 IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True" />
+                 IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True" ToolTip="Log" />
+        <TextBlock x:Name="CurrentSidTextBlock" HorizontalAlignment="Left" Margin="5" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Bottom" Foreground="White"/>
     </Grid>
 </Window>

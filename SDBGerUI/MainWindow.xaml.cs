@@ -28,9 +28,9 @@
         {
             InitializeComponent();
             Console.SetOut(new MyLogger(this.LogOutput));
-            TextWriterTraceListener myWriter = new TextWriterTraceListener(Console.Out);
+            //TextWriterTraceListener myWriter = new TextWriterTraceListener(Console.Out);
 
-            Debug.Listeners.Add(myWriter);
+            //Debug.Listeners.Add(myWriter);
 
             r = new Runner();
         }
