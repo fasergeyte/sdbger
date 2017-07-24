@@ -143,9 +143,11 @@
                     Release();
                     Build();
                     Load();
+                    Console.Beep();
                     break;
                 case Commands.Build:
                     Build();
+                    Console.Beep();
                     break;
                 default:
                     Log.WriteLine("Unknown command: {0}", command);
