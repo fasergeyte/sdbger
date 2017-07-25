@@ -53,7 +53,13 @@
                  Background="Black" SelectionBrush="#FF74BAFF" Foreground="White" FontFamily="Consolas" Cursor=""
                  ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False"
                  FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False"
-                 IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True" ToolTip="Log" />
+                 IsInactiveSelectionHighlightEnabled="True" IsManipulationEnabled="True" IsReadOnly="True" ToolTip="Log" >
+            <TextBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="ClearLog" Header="Clear log" Click="ClearLog_Click" />
+                </ContextMenu>
+            </TextBox.ContextMenu>
+        </TextBox>
         <TextBlock x:Name="CurrentSidTextBlock" HorizontalAlignment="Left" Margin="5" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Bottom" Foreground="White"/>
     </Grid>
 </Window>

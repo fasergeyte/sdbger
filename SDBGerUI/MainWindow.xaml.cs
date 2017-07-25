@@ -72,6 +72,11 @@
             this.ExecuteCommand(RunnerManager.Commands.Build);
         }
 
+        private void ClearLog_Click(object sender, RoutedEventArgs e)
+        {
+            LogOutput.Clear();
+        }
+
         private void ExecuteCommand(string command, params object[] parameters)
         {
             this.IsRedonlyMode = true;
