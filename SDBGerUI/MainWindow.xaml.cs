@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -16,21 +17,16 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Fields
-
-        private readonly RunnerManager runnerManager = new RunnerManager();
-
-        #endregion
-
         #region Constructors and Destructors
 
         public MainWindow()
         {
             InitializeComponent();
             Console.SetOut(new MyLogger(this.LogOutput));
-            //TextWriterTraceListener myWriter = new TextWriterTraceListener(Console.Out);
 
-            //Debug.Listeners.Add(myWriter);
+// TextWriterTraceListener myWriter = new TextWriterTraceListener(Console.Out);
+
+            // Debug.Listeners.Add(myWriter);
 
             // Autoscroll for log.
             LogOutput.TextChanged += (sender, e) =>
@@ -47,11 +43,74 @@
 
         private bool IsRedonlyMode
         {
-            set
+            set { this.ActionsPanel.Dispatcher.Invoke(() => this.ActionsPanel.IsEnabled = !value); }
+        }
+
+        #endregion
+
+        [DllImport("Kernel32")]
+        public static extern void AllocConsole();
+
+        [DllImport("Kernel32")]
+        public static extern void FreeConsole();
+
+        private void ShowConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!this.isConsoleVisible)
             {
-                this.ActionsPanel.Dispatcher.Invoke(() => this.ActionsPanel.IsEnabled = !value);
+                AllocConsole();
+                this.isConsoleVisible = true;
+                this.ShowConsoleButton.Content = "Hide Console";
+            }
+            else
+            {
+                FreeConsole();
+                this.isConsoleVisible = false;
+                this.ShowConsoleButton.Content = "Show Console";
             }
         }
+
+        private class MyLogger : TextWriter
+        {
+            #region Fields
+
+            private readonly TextBox tb;
+
+            #endregion
+
+            #region Constructors and Destructors
+
+            public MyLogger(TextBox tb)
+            {
+                this.tb = tb;
+            }
+
+            #endregion
+
+            #region Public Properties
+
+            public override Encoding Encoding
+            {
+                get { return null; }
+            }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            public override void Write(char value)
+            {
+                this.tb.Dispatcher.Invoke(() => { tb.AppendText(new string(value, 1)); });
+            }
+
+            #endregion
+        }
+
+        #region Fields
+
+        private readonly RunnerManager runnerManager = new RunnerManager();
+        private bool isLoaded = false;
+        private bool isConsoleVisible = false;
 
         #endregion
 
@@ -97,7 +156,18 @@
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            this.ExecuteCommand(RunnerManager.Commands.Load);
+            if (!this.isLoaded)
+            {
+                this.ExecuteCommand(RunnerManager.Commands.Load);
+                this.isLoaded = true;
+                this.LoadButton.Content = "Release";
+            }
+            else
+            {
+                this.ExecuteCommand(RunnerManager.Commands.Release);
+                this.isLoaded = false;
+                this.LoadButton.Content = "Load";
+            }
         }
 
         private void Rebuild_Click(object sender, RoutedEventArgs e)
@@ -105,60 +175,17 @@
             this.ExecuteCommand(RunnerManager.Commands.Rebuild);
         }
 
-        private void ReleaseButton_OnClick_Click(object sender, RoutedEventArgs e)
-        {
-            this.ExecuteCommand(RunnerManager.Commands.Release);
-        }
-
         private void RunButton_Click(object sender, RoutedEventArgs e)
         {
             this.runnerManager.ScenarioBuffer.Append(this.StepsInput.Text);
-            this.runnerManager.Tags.AddRange(Regex.Matches(this.StepsInput.Text, "^\\s*@(.*?)\\s*?$", RegexOptions.Multiline)
-                .Cast<Match>()
-                .Select(m => m.Groups[1].Value)
-                .ToList());
+            this.runnerManager.Tags.AddRange(
+                Regex.Matches(this.StepsInput.Text, "^\\s*@(.*?)\\s*?$", RegexOptions.Multiline)
+                    .Cast<Match>()
+                    .Select(m => m.Groups[1].Value)
+                    .ToList());
             this.ExecuteCommand(RunnerManager.Commands.Run);
         }
 
         #endregion
-
-        private class MyLogger : TextWriter
-        {
-            #region Fields
-
-            private readonly TextBox tb;
-
-            #endregion
-
-            #region Constructors and Destructors
-
-            public MyLogger(TextBox tb)
-            {
-                this.tb = tb;
-            }
-
-            #endregion
-
-            #region Public Properties
-
-            public override Encoding Encoding
-            {
-                get
-                {
-                    return null;
-                }
-            }
-
-            #endregion
-
-            #region Public Methods and Operators
-
-            public override void Write(char value)
-            {
-                this.tb.Dispatcher.Invoke(() => { tb.AppendText(new string(value, 1)); });
-            }
-
-            #endregion
-        }
     }
 }
