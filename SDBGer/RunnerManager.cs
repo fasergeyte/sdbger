@@ -15,15 +15,18 @@
 
         private string lastPath;
 
+        private ILogger logger;
+
         #endregion
 
         #region Constructors and Destructors
 
-        public RunnerManager()
+        public RunnerManager(ILogger logger = null)
         {
+            this.logger = logger ?? new DefaultLogger();
             this.ScenarioBuffer = new StringBuilder();
             this.Tags = new List<string>();
-            this.r = new Runner();
+            this.r = new Runner(this.logger);
         }
 
         #endregion
@@ -46,7 +49,7 @@
         public void ClearSteps()
         {
             ScenarioBuffer.Clear();
-            Log.WriteLine("Steps was cleared.");
+            logger.Trace("Steps was cleared.");
         }
 
         public void ExecuteCommand(string command, params object[] parameters)
@@ -58,22 +61,22 @@
                     break;
                 case Commands.SContext:
                     r.SetValueToScenarioContext((string)parameters[0], (string)parameters[1]);
-                    Log.WriteLine("Anonymous scenario was cleared");
+                    logger.Trace("Anonymous scenario was cleared");
                     break;
                 case Commands.ClearTags:
                     Tags.Clear();
                     r.InitAnonymousFeature(Tags);
-                    Log.WriteLine("Tags for anonymous scenario was cleared");
+                    logger.Trace("Tags for anonymous scenario was cleared");
                     break;
                 case Commands.AutoClear:
                     autoClearIsEnabled = (bool)parameters[0];
-                    Log.WriteLine("auto clear was change to " + autoClearIsEnabled);
+                    logger.Trace("auto clear was change to " + autoClearIsEnabled);
                     break;
                 case Commands.Clear:
                     Tags.Clear();
-                    Log.WriteLine("Tags for anonymous scenario was cleared");
+                    logger.Trace("Tags for anonymous scenario was cleared");
                     this.ClearSteps();
-                    Log.WriteLine("Anonymous scenario was cleared");
+                    logger.Trace("Anonymous scenario was cleared");
                     break;
                 case Commands.RunScenario:
                     r.RunScenario((string)parameters[2], (string)parameters[1], (string)parameters[0]);
@@ -133,7 +136,7 @@
                     Build();
                     break;
                 default:
-                    Log.WriteLine("Unknown command: {0}", command);
+                    logger.Trace("Unknown command: {0}", command);
                     break;
             }
         }

@@ -10,6 +10,8 @@
     using System.Text.RegularExpressions;
     using System.Threading;
 
+    using BoDi;
+
     using NUnit.Framework;
 
     using OpenQA.Selenium.Chrome;
@@ -19,6 +21,7 @@
     using TechTalk.SpecFlow.Bindings.Discovery;
     using TechTalk.SpecFlow.Configuration;
     using TechTalk.SpecFlow.Infrastructure;
+    using TechTalk.SpecFlow.Tracing;
     using TechTalk.SpecFlow.UnitTestProvider;
 
     using TestStatus = TechTalk.SpecFlow.Infrastructure.TestStatus;
@@ -34,6 +37,10 @@
         private readonly IContextManager contextManager;
 
         private readonly TestExecutionEngine executionEngine;
+
+        private readonly ObjectContainer globalContainer;
+
+        private readonly ILogger logger;
 
         private readonly RuntimeConfiguration runtimeConfiguration;
 
@@ -69,7 +76,7 @@
 
         #region Constructors and Destructors
 
-        public SpecflowManager(string assemblyPath)
+        public SpecflowManager(string assemblyPath, ILogger logger)
         {
             ConfigurationManager.AppSettings["SmtpServerEnabled"] = "false";
 
@@ -88,7 +95,11 @@
 
             var core = this.testAssembly.GetReferencedAssemblies().First(a => a.FullName.Contains("Wilco.UITest.Core"));
             this.webBrowser = Assembly.Load(core).GetTypes().First(t => t.Name.Contains("WebBrowser"));
-
+            this.globalContainer = this.testRunnerManager.GetMemberValue<ObjectContainer>("globalContainer");
+            if (logger != null)
+            {
+                this.RegistrLogger(logger);
+            }
             //this.Bind(this.testAssembly);
         }
 
@@ -146,7 +157,7 @@
                 }
                 catch (Exception)
                 {
-                    Log.WriteLine("Feature '{0}' is not found.", rd.CurrentFeature);
+                    this.logger.Trace("Feature '{0}' is not found.", rd.CurrentFeature);
                 }
             }
 
@@ -158,7 +169,7 @@
                 }
                 catch (Exception)
                 {
-                    Log.WriteLine("Feature '{0}' is not found.", rd.CurrentScenario);
+                    this.logger.Trace("Feature '{0}' is not found.", rd.CurrentScenario);
                 }
             }
 
@@ -207,7 +218,7 @@
                         return true;
                     }
 
-                    Log.WriteLine("Item from feature context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
+                    this.logger.Trace("Item from feature context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
                     return false;
                 }
                 ).ToDictionary(k => k.Key, v => v.Value);
@@ -221,7 +232,7 @@
                         return true;
                     }
 
-                    Log.WriteLine("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
+                    this.logger.Trace("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
                     return false;
                 }
                 ).ToDictionary(k => k.Key, v => v.Value);
@@ -330,6 +341,13 @@
             this.testRunner.InvokeMethod("OnTestRunEnd");
         }
 
+        public void RegistrLogger(ILogger logger)
+        {
+            var tracer = new SdbgerTracer(logger);
+
+            this.executionEngine.SetMemberValue("testTracer.traceListener", tracer);
+        }
+
         public Exception RunScenario()
         {
             var feature = Activator.CreateInstance(this.currentFeatureType);
@@ -390,12 +408,12 @@
             if (ScenarioContext.Current.ContainsKey(key))
             {
                 ScenarioContext.Current[key] = value;
-                Log.WriteLine("Key '{0}' was changed to '{1}'.", key, value);
+                this.logger.Trace("Key '{0}' was changed to '{1}'.", key, value);
             }
             else
             {
                 ScenarioContext.Current.Add(key, value);
-                Log.WriteLine("Key '{0}' was added with value '{1}'.", key, value);
+                this.logger.Trace("Key '{0}' was added with value '{1}'.", key, value);
             }
         }
 
@@ -596,7 +614,7 @@
                                     }
 
                                     // this will dispose this object
-                                    this.testRunnerManager.GetMemberValue<IDisposable>("globalContainer").Dispose();
+                                    this.globalContainer.Dispose();
 
                                     #endregion
                                 };
@@ -641,5 +659,37 @@
         }
 
         #endregion
+
+        internal class SdbgerTracer : ITraceListener
+        {
+            #region Fields
+
+            private readonly ILogger logger;
+
+            #endregion
+
+            #region Constructors and Destructors
+
+            public SdbgerTracer(ILogger logger)
+            {
+                this.logger = logger;
+            }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            public void WriteTestOutput(string message)
+            {
+                this.logger.Trace(message);
+            }
+
+            public void WriteToolOutput(string message)
+            {
+                this.logger.Trace(message);
+            }
+
+            #endregion
+        }
     }
 }

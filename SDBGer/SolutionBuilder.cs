@@ -13,7 +13,7 @@
 
         public static void Build(string buildFileUri)
         {
-            List<ILogger> loggers = new List<ILogger>();
+            List<Microsoft.Build.Framework.ILogger> loggers = new List<Microsoft.Build.Framework.ILogger>();
             loggers.Add(new ConsoleLogger()
             {
                 Verbosity = LoggerVerbosity.Minimal,
@@ -39,7 +39,7 @@
             props["Configuration"] = "Debug";
             var request = new BuildRequestData(buildFileUri, props, null, new string[] { "Build" }, null);
             var parms = new BuildParameters();
-            List<ILogger> loggers = new List<ILogger>();
+            List<Microsoft.Build.Framework.ILogger> loggers = new List<Microsoft.Build.Framework.ILogger>();
             loggers.Add(new ConsoleLogger()
             {
                 Verbosity = LoggerVerbosity.Minimal,

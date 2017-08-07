@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DefaultLogger.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="Program.cs" />

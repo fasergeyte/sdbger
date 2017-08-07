@@ -176,7 +176,7 @@
             // Kill chrome driver
             SpecflowManager.KillChromeDriver();
 
-            r = new Runner();
+            r = new Runner(new DefaultLogger());
 
             try
             {

@@ -20,11 +20,22 @@
 
         #region Fields
 
+        private readonly ILogger logger;
+
         private AppDomain runnerDomain;
 
         private RunningData runningData;
 
         private SpecflowManager specManager;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        public Runner(ILogger logger)
+        {
+            this.logger = logger;
+        }
 
         #endregion
 
@@ -47,40 +58,40 @@
             if (this.runningData != null)
             {
                 this.specManager.ApplyRunningData(this.runningData);
-                Log.WriteLine("Data from last running was applied.");
+                logger.Trace("Data from last running was applied.");
             }
         }
 
         public void BeforeFeature()
         {
             this.specManager.BeforeFeature();
-            Log.WriteLine("BeforeFeature was executed.");
+            logger.Trace("BeforeFeature was executed.");
         }
 
         public void BeforeScenario()
         {
             this.specManager.BeforeScenario();
-            Log.WriteLine("BeforeScenario was executed.");
+            logger.Trace("BeforeScenario was executed.");
         }
 
         public void BeforeTestRun()
         {
             this.specManager.BeforeTestRun();
-            Log.WriteLine("BeforeTestRun was executed.");
+            logger.Trace("BeforeTestRun was executed.");
         }
 
         public void InitAnonymousFeature(IEnumerable<string> tags)
         {
             UseLastOrInitAnonymousFeature(tags);
-            return;
-            this.specManager.InitAnonymousFeature(AnonymousFeatureName, tags.ToArray());
-            Log.WriteLine("Anonymous feature was initialized.");
+
+            //this.specManager.InitAnonymousFeature(AnonymousFeatureName, tags.ToArray());
+            //logger.Trace("Anonymous feature was initialized.");
         }
 
         public void InitAnonymousScenario()
         {
             this.specManager.InitAnonymousScenario(AnonymousScenarioName, AnonymousFeatureName);
-            Log.WriteLine("Anonymous scenario was initialized.");
+            logger.Trace("Anonymous scenario was initialized.");
         }
 
         public void InitDomain(string assemblyPath)
@@ -92,44 +103,45 @@
             stp.ConfigurationFile = assemblyPath + ".config";
             stp.ApplicationBase = Path.GetDirectoryName(assemblyPath);
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var libs = new[]
-            {
-                //Path.Combine(baseDir, "SDBGer.vshost.exe"),
-                Path.Combine(baseDir, "SDBGer.exe")
-            };
+            var libs = Directory.GetFiles(baseDir, "*.*").Where(s => s.EndsWith(".dll") || s.EndsWith(".exe"));
+//                new[]
+//            {
+//                //Path.Combine(baseDir, "SDBGer.vshost.exe"),
+//                Path.Combine(baseDir, "SDBGer.exe")
+//            };
             foreach (string dll in libs)
             {
                 File.Copy(dll, Path.Combine(stp.ApplicationBase, Path.GetFileName(dll)), true);
             }
-
-            runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
+            this.runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
             var type = typeof(SpecflowManager);
 
-            var value = (SpecflowManager)runnerDomain.CreateInstanceAndUnwrap(
+            this.logger.Trace("inti");
+            var value = (SpecflowManager)this.runnerDomain.CreateInstanceAndUnwrap(
                 type.Assembly.FullName,
                 type.FullName,
                 false,
                 BindingFlags.Default,
                 null,
-                new object[] { assemblyPath },
+                new object[] { assemblyPath, this.logger },
                 null,
                 null);
 
             specManager = value;
 
-            Log.WriteLine("'{0}' loaded.", assemblyPath);
+            this.logger.Trace("'{0}' loaded.", assemblyPath);
         }
 
         public void InitFeature(string featureNa, string nspase = null)
         {
             this.specManager.InitFeature(featureNa, nspase);
-            Log.WriteLine("Feature '{0}' was initialized.", featureNa);
+            logger.Trace("Feature '{0}' was initialized.", featureNa);
         }
 
         public void InitScenario(string scenName)
         {
             this.specManager.InitScenario(scenName);
-            Log.WriteLine("Scenario '{0}' was initialized.", scenName);
+            logger.Trace("Scenario '{0}' was initialized.", scenName);
         }
 
         public void InitScenario(string scenario, string featureName = null, string nspace = null)
@@ -148,7 +160,7 @@
 
             AppDomain.Unload(this.runnerDomain);
 
-            Log.WriteLine("Tests library was released.");
+            logger.Trace("Tests library was released.");
         }
 
         public void RunScenario(string scenarioName = null, string featureName = null, string nspace = null)
@@ -169,11 +181,11 @@
 
             if (error != null)
             {
-                Log.Red(error);
+                this.logger.Error(error);
             }
             else
             {
-                Log.Green(string.Format("The scenario '{0}' completed successfully", scenarioName));
+                logger.Success(string.Format("The scenario '{0}' completed successfully", scenarioName));
             }
         }
 
@@ -188,7 +200,7 @@
                 var exception = this.specManager.RunStep(step);
                 if (exception != null)
                 {
-                    Log.Red(exception);
+                    this.logger.Error(exception);
                     return;
                 }
             }
@@ -199,12 +211,17 @@
         public void SaveRunningData()
         {
             this.runningData = this.specManager.GetRunningData();
-            Log.WriteLine("Running data was saved.");
+            logger.Trace("Running data was saved.");
         }
 
         public void SetNewChrome()
         {
             this.specManager.SetNewChrome();
+        }
+
+        public void SetValueToScenarioContext(string key, string value)
+        {
+            this.specManager.SetValueToScenarioContext(key, value);
         }
 
         public void UseLastOrInitAnonymousFeature(IEnumerable<string> tags)
@@ -213,19 +230,14 @@
             if (currentFeature == null || currentFeature == AnonymousFeatureName)
             {
                 this.specManager.InitAnonymousFeature(AnonymousFeatureName, tags.ToArray());
-                Log.WriteLine("Anonymous feature was initialized.");
+                logger.Trace("Anonymous feature was initialized.");
             }
             else
             {
-                Log.WriteLine(string.Format("App use feature context of '{0}'", currentFeature));
+                logger.Trace(string.Format("App use feature context of '{0}'", currentFeature));
             }
         }
 
         #endregion
-
-        public void SetValueToScenarioContext(string key, string value)
-        {
-            this.specManager.SetValueToScenarioContext(key, value);
-        }
     }
 }
