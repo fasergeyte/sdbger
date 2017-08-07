@@ -32,6 +32,12 @@
             this.Print(ConsoleColor.Red, ex);
         }
 
+        // https://social.msdn.microsoft.com/Forums/en-US/3ab17b40-546f-4373-8c08-f0f072d818c9/remotingexception-when-raising-events-across-appdomains?forum=netfxremoting
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         public void Success(string st, params object[] parameters)
         {
             this.Print(ConsoleColor.Green, st, parameters);
