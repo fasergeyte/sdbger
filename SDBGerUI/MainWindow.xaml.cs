@@ -162,22 +162,6 @@
             this.LogOutput.ScrollToEnd();
         }
 
-        private void ShowConsoleButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!this.isConsoleVisible)
-            {
-                AllocConsole();
-                this.isConsoleVisible = true;
-                this.ShowConsoleButton.Content = "Hide Console";
-            }
-            else
-            {
-                FreeConsole();
-                this.isConsoleVisible = false;
-                this.ShowConsoleButton.Content = "Show Console";
-            }
-        }
-
         private void UpdateOutput()
         {
             if (!this.logger.IsUptodate)
