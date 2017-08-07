@@ -90,6 +90,7 @@
 
         private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
+            this.logger.Log.Clear();
             this.LogOutput.Clear();
         }
 

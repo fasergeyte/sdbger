@@ -116,7 +116,7 @@
             this.runnerDomain = AppDomain.CreateDomain("SpecflowDebugRunner", new Evidence(), stp);
             var type = typeof(SpecflowManager);
 
-            this.logger.Trace("inti");
+            this.logger.Trace("--initialized--");
             var value = (SpecflowManager)this.runnerDomain.CreateInstanceAndUnwrap(
                 type.Assembly.FullName,
                 type.FullName,
