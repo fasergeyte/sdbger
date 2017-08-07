@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-        Title="SDBGer" Height="900" Width="680" d:DataContext="{d:DesignData MainWindow}">
+        Title="SDBGer" Height="665" Width="680" d:DataContext="{d:DesignData MainWindow}">
     <Window.Resources>
         <AlternationConverter x:Key="AlternationConverter"/>
     </Window.Resources>
@@ -12,6 +12,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="2" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -47,7 +48,7 @@
         </Grid>
         <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Background="Black"
                       ResizeDirection="Rows" />
-        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5" TextWrapping="Wrap"
+        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5,5,5,0" TextWrapping="Wrap"
                  Background="Black" SelectionBrush="#FF74BAFF" Foreground="White" FontFamily="Consolas" Cursor=""
                  ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False"
                  FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False"
@@ -58,6 +59,9 @@
                 </ContextMenu>
             </TextBox.ContextMenu>
         </TextBox>
-        <TextBlock x:Name="CurrentSidTextBlock" HorizontalAlignment="Left" Margin="5" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Bottom" Foreground="White"/>
+        <DockPanel Grid.Row="3" LastChildFill="True" Margin="5, 0">
+            <Label FontSize="12" Padding="5 0" Foreground="White" VerticalContentAlignment="Center" >{sid}=</Label>
+            <TextBox x:Name="CurrentSidTextBlock" Width="Auto" Margin="1" VerticalAlignment="Stretch"  Foreground="Black"/>
+        </DockPanel>
     </Grid>
 </Window>

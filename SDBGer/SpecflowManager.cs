@@ -98,6 +98,7 @@
             this.globalContainer = this.testRunnerManager.GetMemberValue<ObjectContainer>("globalContainer");
             if (logger != null)
             {
+                this.logger = logger;
                 this.RegistrLogger(logger);
             }
             //this.Bind(this.testAssembly);
@@ -232,7 +233,7 @@
                         return true;
                     }
 
-                    this.logger.Trace("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType());
+                    this.logger.Trace("Item from scenario context with key '{0}' and type '{1}' is not serialize.", item.Key, item.Value.GetType().ToString());
                     return false;
                 }
                 ).ToDictionary(k => k.Key, v => v.Value);
@@ -241,6 +242,16 @@
             rd.CurrentScenario = this.CurrentScenario;
 
             return rd;
+        }
+
+        public object GetValueToFeatureContext(string key)
+        {
+            return this.GetValueFromContext(key, FeatureContext.Current);
+        }
+
+        public object GetValueToScenarioContext(string key)
+        {
+            return this.GetValueFromContext(key, ScenarioContext.Current);
         }
 
         public void InitAnonymousFeature(string featureName, string[] tags = null)
@@ -403,18 +414,14 @@
             this.webBrowser.GetMemberValue<ChromeDriver>("Driver");
         }
 
+        public void SetValueToFeatureContext(string key, string value)
+        {
+            this.SetValueTo(key, value, FeatureContext.Current);
+        }
+
         public void SetValueToScenarioContext(string key, string value)
         {
-            if (ScenarioContext.Current.ContainsKey(key))
-            {
-                ScenarioContext.Current[key] = value;
-                this.logger.Trace("Key '{0}' was changed to '{1}'.", key, value);
-            }
-            else
-            {
-                ScenarioContext.Current.Add(key, value);
-                this.logger.Trace("Key '{0}' was added with value '{1}'.", key, value);
-            }
+            this.SetValueTo(key, value, ScenarioContext.Current);
         }
 
         #endregion
@@ -471,6 +478,11 @@
             var e = ScenarioContext.Current.TestError ?? new Exception(status.ToString());
             this.ClearContextAfterError();
             return e;
+        }
+
+        private object GetValueFromContext(string key, IDictionary<string, object> current)
+        {
+            return current[key];
         }
 
         private void InitFeature(FeatureInfo featureInfo)
@@ -656,6 +668,20 @@
         private void SetStatusForTest(TestStatus value)
         {
             this.contextManager.ScenarioContext.SetMemberValue("TestStatus", value);
+        }
+
+        private void SetValueTo(string key, string value, IDictionary<string, object> context)
+        {
+            if (context.ContainsKey(key))
+            {
+                context[key] = value;
+                this.logger.Trace("Key '{0}' was changed to '{1}'.", key, value);
+            }
+            else
+            {
+                context.Add(key, value);
+                this.logger.Trace("Key '{0}' was added with value '{1}'.", key, value);
+            }
         }
 
         #endregion

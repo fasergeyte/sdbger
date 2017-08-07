@@ -80,9 +80,19 @@
             logger.Trace("BeforeTestRun was executed.");
         }
 
+        public object GetValueFromFeatureContext(string key)
+        {
+            return this.specManager.GetValueToScenarioContext(key);
+        }
+
+        public object GetValueFromScenarioContext(string key)
+        {
+            return this.specManager.GetValueToScenarioContext(key);
+        }
+
         public void InitAnonymousFeature(IEnumerable<string> tags)
         {
-            UseLastOrInitAnonymousFeature(tags);
+            this.UseLastOrInitAnonymousFeature(tags);
 
             //this.specManager.InitAnonymousFeature(AnonymousFeatureName, tags.ToArray());
             //logger.Trace("Anonymous feature was initialized.");
@@ -217,6 +227,11 @@
         public void SetNewChrome()
         {
             this.specManager.SetNewChrome();
+        }
+
+        public void SetValueToFeatureContext(string key, string value)
+        {
+            this.specManager.SetValueToFeatureContext(key, value);
         }
 
         public void SetValueToScenarioContext(string key, string value)

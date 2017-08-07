@@ -2,7 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -56,18 +55,9 @@
             set
             {
                 this.ActionsPanel.Dispatcher.Invoke(() => this.ActionsPanel.IsEnabled = !value);
+                this.CurrentSidTextBlock.Dispatcher.Invoke(() => this.CurrentSidTextBlock.IsReadOnly = value);
             }
         }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        [DllImport("Kernel32")]
-        public static extern void AllocConsole();
-
-        [DllImport("Kernel32")]
-        public static extern void FreeConsole();
 
         #endregion
 
@@ -96,12 +86,17 @@
 
         private void ExecuteCommand(string command, params object[] parameters)
         {
+            this.ExecuteLongAction(() => { this.runnerManager.ExecuteCommand(command, parameters); });
+        }
+
+        private void ExecuteLongAction(Action action)
+        {
             this.IsRedonlyMode = true;
             Task.Run(() =>
             {
                 try
                 {
-                    this.runnerManager.ExecuteCommand(command, parameters);
+                    action();
                 }
                 catch (Exception e)
                 {
@@ -128,7 +123,12 @@
         {
             if (!this.isLoaded)
             {
-                this.ExecuteCommand(RunnerManager.Commands.Load);
+                this.ExecuteLongAction(() =>
+                {
+                    this.runnerManager.Load();
+                    this.UpdateSidTextbox();
+                });
+
                 this.isLoaded = true;
                 this.LoadButton.Content = "Release";
             }
@@ -153,7 +153,18 @@
                     .Cast<Match>()
                     .Select(m => m.Groups[1].Value)
                     .ToList());
-            this.ExecuteCommand(RunnerManager.Commands.Run);
+
+            if (this.CurrentSidTextBlock.Text == string.Empty)
+            {
+                this.CurrentSidTextBlock.Text = Guid.NewGuid().ToString();
+            }
+            var sid = this.CurrentSidTextBlock.Text;
+
+            this.ExecuteLongAction(() =>
+            {
+                this.runnerManager.ExecuteCommand(RunnerManager.Commands.SetScenarioContextValue, "{sid}", sid);
+                this.runnerManager.ExecuteCommand(RunnerManager.Commands.Run);
+            });
         }
 
         private void ScrollOutputTextboxToEnd()
@@ -170,6 +181,13 @@
                 this.LogOutput.Text = this.logger.Log.ToString();
                 this.logger.IsUptodate = true;
             }
+        }
+
+        private void UpdateSidTextbox()
+        {
+            this.CurrentSidTextBlock.Dispatcher.Invoke(() =>
+                this.CurrentSidTextBlock.Text = this.runnerManager.Runner.GetValueFromScenarioContext("{sid}").ToString()
+                );
         }
 
         #endregion
@@ -199,11 +217,13 @@
             public void Error(string st, params object[] parameters)
             {
                 this.Write(st, parameters);
+                Console.Beep();
             }
 
             public void Error(Exception exception)
             {
                 this.Write(exception.Message + "\n" + exception.StackTrace);
+                Console.Beep();
             }
 
             // https://social.msdn.microsoft.com/Forums/en-US/3ab17b40-546f-4373-8c08-f0f072d818c9/remotingexception-when-raising-events-across-appdomains?forum=netfxremoting
@@ -215,6 +235,7 @@
             public void Success(string st, params object[] parameters)
             {
                 this.Write(st, parameters);
+                Console.Beep();
             }
 
             public void Trace(string st, params object[] parameters)

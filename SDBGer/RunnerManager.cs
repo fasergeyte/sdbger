@@ -9,13 +9,11 @@
     {
         #region Fields
 
-        private readonly Runner r;
+        private readonly ILogger logger;
 
         private bool autoClearIsEnabled = true;
 
         private string lastPath;
-
-        private ILogger logger;
 
         #endregion
 
@@ -26,12 +24,14 @@
             this.logger = logger ?? new DefaultLogger();
             this.ScenarioBuffer = new StringBuilder();
             this.Tags = new List<string>();
-            this.r = new Runner(this.logger);
+            this.Runner = new Runner(this.logger);
         }
 
         #endregion
 
         #region Public Properties
+
+        public Runner Runner { get; set; }
 
         public StringBuilder ScenarioBuffer { get; private set; }
 
@@ -48,29 +48,31 @@
 
         public void ClearSteps()
         {
-            ScenarioBuffer.Clear();
-            logger.Trace("Steps was cleared.");
+            this.ScenarioBuffer.Clear();
+            this.logger.Trace("Steps was cleared.");
         }
 
-        public void ExecuteCommand(string command, params object[] parameters)
+        public object ExecuteCommand(string command, params object[] parameters)
         {
             switch (command)
             {
                 case Commands.ClearSteps:
-                    ScenarioBuffer.Clear();
+                    this.ScenarioBuffer.Clear();
                     break;
-                case Commands.SContext:
-                    r.SetValueToScenarioContext((string)parameters[0], (string)parameters[1]);
-                    logger.Trace("Anonymous scenario was cleared");
+                case Commands.SetScenarioContextValue:
+                    this.Runner.SetValueToScenarioContext((string)parameters[0], (string)parameters[1]);
+                    break;
+                case Commands.GetScenarioContextValue:
+                    return this.Runner.GetValueFromScenarioContext((string)parameters[0]);
                     break;
                 case Commands.ClearTags:
-                    Tags.Clear();
-                    r.InitAnonymousFeature(Tags);
-                    logger.Trace("Tags for anonymous scenario was cleared");
+                    this.Tags.Clear();
+                    this.Runner.InitAnonymousFeature(Tags);
+                    this.logger.Trace("Tags for anonymous scenario was cleared");
                     break;
                 case Commands.AutoClear:
-                    autoClearIsEnabled = (bool)parameters[0];
-                    logger.Trace("auto clear was change to " + autoClearIsEnabled);
+                    this.autoClearIsEnabled = (bool)parameters[0];
+                    this.logger.Trace("auto clear was change to " + autoClearIsEnabled);
                     break;
                 case Commands.Clear:
                     Tags.Clear();
@@ -79,39 +81,39 @@
                     logger.Trace("Anonymous scenario was cleared");
                     break;
                 case Commands.RunScenario:
-                    r.RunScenario((string)parameters[2], (string)parameters[1], (string)parameters[0]);
+                    Runner.RunScenario((string)parameters[2], (string)parameters[1], (string)parameters[0]);
                     break;
                 case Commands.InitScenario:
                     if (!parameters.Any())
                     {
-                        r.InitAnonymousScenario();
+                        Runner.InitAnonymousScenario();
                     }
                     else
                     {
-                        r.InitScenario((string)parameters[0]);
+                        Runner.InitScenario((string)parameters[0]);
                     }
 
                     break;
                 case Commands.InitFeature:
                     if (!parameters.Any())
                     {
-                        r.InitAnonymousFeature(Tags);
+                        Runner.InitAnonymousFeature(Tags);
                     }
                     else
                     {
-                        r.InitFeature((string)parameters[0]);
+                        Runner.InitFeature((string)parameters[0]);
                     }
 
                     break;
                 case Commands.BeforeFeature:
-                    r.BeforeFeature();
+                    Runner.BeforeFeature();
                     break;
                 case Commands.BeforeScenario:
-                    r.BeforeScenario();
+                    Runner.BeforeScenario();
                     break;
                 case Commands.Run:
-                    r.UseLastOrInitAnonymousFeature(Tags);
-                    r.RunSteps(ScenarioBuffer.ToString());
+                    Runner.UseLastOrInitAnonymousFeature(Tags);
+                    Runner.RunSteps(ScenarioBuffer.ToString());
                     if (autoClearIsEnabled)
                     {
                         ClearSteps();
@@ -122,7 +124,7 @@
                     Release();
                     break;
                 case Commands.SetNewChrome:
-                    r.SetNewChrome();
+                    Runner.SetNewChrome();
                     break;
                 case Commands.Load:
                     Load((string)(parameters.Any() ? parameters[0] : null));
@@ -139,6 +141,7 @@
                     logger.Trace("Unknown command: {0}", command);
                     break;
             }
+            return null;
         }
 
         public void Load(string parametr = null)
@@ -146,15 +149,15 @@
             lastPath = (string.IsNullOrEmpty(parametr) ? lastPath : parametr.Replace("\\", "/")) ??
                        ConfigurationManager.AppSettings["TestsPath"];
 
-            r.InitDomain(lastPath);
-            r.BeforeTestRun();
-            r.InitAnonymousScenario();
-            r.ApplyRunningData();
+            Runner.InitDomain(lastPath);
+            Runner.BeforeTestRun();
+            Runner.InitAnonymousScenario();
+            Runner.ApplyRunningData();
 
-            if (!r.IsChromeDriverInitialized)
+            if (!Runner.IsChromeDriverInitialized)
             {
-                r.BeforeFeature();
-                r.BeforeScenario();
+                Runner.BeforeFeature();
+                Runner.BeforeScenario();
             }
         }
 
@@ -181,8 +184,8 @@
 
         public void Release()
         {
-            r.SaveRunningData();
-            r.RealiseAssemblies();
+            Runner.SaveRunningData();
+            Runner.RealiseAssemblies();
             return;
         }
 
@@ -210,6 +213,8 @@
 
             public const string ClearTags = "-cleartags";
 
+            public const string GetScenarioContextValue = "-getscenariocontextvalue";
+
             public const string InitFeature = "-initfeature";
 
             public const string InitScenario = "-initscenario";
@@ -226,9 +231,9 @@
 
             public const string RunScenario = "-runscenario";
 
-            public const string SContext = "-context";
-
             public const string SetNewChrome = "-chrome";
+
+            public const string SetScenarioContextValue = "-setscenariocontextvalue";
 
             #endregion
         }
