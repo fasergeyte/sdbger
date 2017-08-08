@@ -214,8 +214,7 @@
                     return;
                 }
             }
-
-            Log.Green("Execution of steps was completed.");
+            this.logger.Success("Execution result: 'SUCCESS'");
         }
 
         public void SaveRunningData()
