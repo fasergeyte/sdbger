@@ -60,8 +60,8 @@
             </TextBox.ContextMenu>
         </TextBox>
         <DockPanel Grid.Row="3" LastChildFill="True" Margin="5, 0">
-            <Label FontSize="12" Padding="5 0" Foreground="White" VerticalContentAlignment="Center" >{sid}=</Label>
-            <TextBox x:Name="CurrentSidTextBlock" Width="Auto" Margin="1" VerticalAlignment="Stretch"  Foreground="Black"/>
+            <Label FontSize="12" Padding="5 0" Foreground="White" VerticalContentAlignment="Center" Content="{}{sid} =" />
+            <TextBox x:Name="CurrentSidTextBlock" Width="Auto" Margin="1" VerticalAlignment="Stretch"  Foreground="White" Background="#FF191919" BorderBrush="#FF191919"/>
         </DockPanel>
     </Grid>
 </Window>
