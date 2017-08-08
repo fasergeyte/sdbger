@@ -1,9 +1,11 @@
 ﻿namespace SDBGerUI
 {
     using System;
+    using System.ComponentModel;
     using System.Linq;
-    using System.Text;
+    using System.Runtime.CompilerServices;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Threading;
@@ -13,13 +15,23 @@
     /// <summary>
     /// MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        #region Static Fields
+
+        public static readonly DependencyProperty IsReadOnlyModeProperty = DependencyProperty.Register("IsReadOnlyMode", typeof(object), typeof(MainWindow), new PropertyMetadata(default(object)));
+
+        #endregion
+
         #region Fields
+
+        private Thread currentExecutingThread;
 
         private bool isConsoleVisible = false;
 
         private bool isLoaded = false;
+
+        private bool isRedonlyMode = false;
 
         private MyLogger logger;
 
@@ -48,20 +60,52 @@
 
         #endregion
 
-        #region Properties
+        #region Public Events
 
-        private bool IsRedonlyMode
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Public Properties
+
+        public Thread CurrentExecutingThread
         {
+            get
+            {
+                return this.currentExecutingThread;
+            }
             set
             {
-                this.ActionsPanel.Dispatcher.Invoke(() => this.ActionsPanel.IsEnabled = !value);
-                this.CurrentSidTextBlock.Dispatcher.Invoke(() => this.CurrentSidTextBlock.IsReadOnly = value);
+                this.currentExecutingThread = value;
+                this.OnPropertyChanged("CurrentExecutingThread");
+            }
+        }
+
+        public bool IsRedonlyMode
+        {
+            get
+            {
+                return this.isRedonlyMode;
+            }
+            set
+            {
+                this.isRedonlyMode = value;
+                this.OnPropertyChanged("IsRedonlyMode");
             }
         }
 
         #endregion
 
         #region Methods
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
         private void BeforeFeature_Click(object sender, RoutedEventArgs e)
         {
@@ -78,6 +122,11 @@
             this.ExecuteCommand(RunnerManager.Commands.Build);
         }
 
+        private void CancelButton_OnClickButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.CurrentExecutingThread.Abort();
+        }
+
         private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
             this.logger.Log.Clear();
@@ -92,8 +141,11 @@
         private void ExecuteLongAction(Action action)
         {
             this.IsRedonlyMode = true;
+
             Task.Run(() =>
             {
+                this.CurrentExecutingThread = Thread.CurrentThread;
+
                 try
                 {
                     action();
@@ -102,8 +154,12 @@
                 {
                     this.logger.Error(e);
                 }
-
-                this.IsRedonlyMode = false;
+                finally
+                {
+                    this.IsRedonlyMode = false;
+                    this.CurrentExecutingThread = null;
+                    this.runnerManager.Runner.ClearContextAfterErrors();
+                }
             });
         }
 
@@ -147,6 +203,7 @@
 
         private void RunButton_Click(object sender, RoutedEventArgs e)
         {
+            this.runnerManager.ScenarioBuffer.Clear();
             this.runnerManager.ScenarioBuffer.Append(this.StepsInput.Text);
             this.runnerManager.Tags.AddRange(
                 Regex.Matches(this.StepsInput.Text, "^\\s*@(.*?)\\s*?$", RegexOptions.Multiline)
@@ -191,76 +248,5 @@
         }
 
         #endregion
-
-        [Serializable]
-        private class MyLogger : MarshalByRefObject, ILogger
-        {
-            #region Constructors and Destructors
-
-            public MyLogger()
-            {
-                this.Log = new StringBuilder();
-            }
-
-            #endregion
-
-            #region Public Properties
-
-            public bool IsUptodate { get; set; }
-
-            public StringBuilder Log { get; set; }
-
-            #endregion
-
-            #region Public Methods and Operators
-
-            public void Error(string st, params object[] parameters)
-            {
-                this.Write(st, parameters);
-                Console.Beep();
-            }
-
-            public void Error(Exception exception)
-            {
-                this.Write(exception.Message + "\n" + exception.StackTrace);
-                Console.Beep();
-            }
-
-            // https://social.msdn.microsoft.com/Forums/en-US/3ab17b40-546f-4373-8c08-f0f072d818c9/remotingexception-when-raising-events-across-appdomains?forum=netfxremoting
-            public override object InitializeLifetimeService()
-            {
-                return null;
-            }
-
-            public void Success(string st, params object[] parameters)
-            {
-                this.Write(st, parameters);
-                Console.Beep();
-            }
-
-            public void Trace(string st, params object[] parameters)
-            {
-                this.Write(st, parameters);
-            }
-
-            #endregion
-
-            #region Methods
-
-            private void Write(string value, params object[] parameters)
-            {
-                if (parameters.Any())
-                {
-                    this.Log.AppendLine(string.Format(value, parameters));
-                }
-                else
-                {
-                    this.Log.AppendLine(value);
-                }
-                this.IsUptodate = false;
-            }
-
-            #endregion
-        }
     }
 }

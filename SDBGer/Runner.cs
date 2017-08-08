@@ -80,6 +80,11 @@
             logger.Trace("BeforeTestRun was executed.");
         }
 
+        public void ClearContextAfterErrors()
+        {
+            this.specManager.ClearContextAfterError();
+        }
+
         public object GetValueFromFeatureContext(string key)
         {
             return this.specManager.GetValueToScenarioContext(key);
