@@ -1,6 +1,7 @@
 ﻿namespace SDBGer
 {
     using System.Collections.Generic;
+    using System.IO;
 
     using Microsoft.Build.Evaluation;
     using Microsoft.Build.Execution;
@@ -11,25 +12,26 @@
     {
         #region Public Methods and Operators
 
-        public static void Build(string buildFileUri)
+        public static bool Build(string buildFileUri, ILogger logger = null)
         {
-            List<Microsoft.Build.Framework.ILogger> loggers = new List<Microsoft.Build.Framework.ILogger>();
-            loggers.Add(new ConsoleLogger()
-            {
-                Verbosity = LoggerVerbosity.Minimal,
-                ShowSummary = false,
-                SkipProjectStartedText = true
-            });
             var projectCollection = new ProjectCollection();
-            projectCollection.RegisterLoggers(loggers);
             var project = projectCollection.LoadProject(buildFileUri); // Needs a reference to System.Xml
+            var loggers = new List<Microsoft.Build.Framework.ILogger>();
+            loggers.Add(new FileLogger() { Parameters = "logfile=sdbger-build.log" });
+
+            projectCollection.RegisterLoggers(loggers);
             try
             {
-                project.Build();
+                return project.Build();
             }
             finally
             {
                 projectCollection.UnregisterAllLoggers();
+
+                if (logger != null)
+                {
+                    logger.Trace(File.ReadAllText("sdbger-build.log"));
+                }
             }
         }
 

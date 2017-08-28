@@ -49,6 +49,14 @@
             }
         }
 
+        public bool IsLoaded
+        {
+            get
+            {
+                return this.runnerDomain != null;
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -117,6 +125,7 @@
             var stp = new AppDomainSetup();
             stp.ConfigurationFile = assemblyPath + ".config";
             stp.ApplicationBase = Path.GetDirectoryName(assemblyPath);
+
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var libs = Directory.GetFiles(baseDir, "*.*").Where(s => s.EndsWith(".dll") || s.EndsWith(".exe"));
 //                new[]
@@ -174,8 +183,8 @@
             // KillChromeDriver();
 
             AppDomain.Unload(this.runnerDomain);
-
-            logger.Trace("Tests library was released.");
+            this.runnerDomain = null;
+            this.logger.Trace("Tests library was released.");
         }
 
         public void RunScenario(string scenarioName = null, string featureName = null, string nspace = null)

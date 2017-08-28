@@ -404,7 +404,7 @@
                     throw new NotImplementedException();
             }
 
-            return this.GetResultException();
+            return this.ConvertException(this.GetResultException());
         }
 
         public void SetNewChrome()
@@ -459,6 +459,32 @@
         {
             this.bindingRegistryBuilder.BuildBindingsFromAssembly(assembly);
             this.bindingRegistry.Ready = true;
+        }
+
+        private Exception ConvertException(Exception e)
+        {
+            return new Exception("asdfasdf", e);
+        }
+
+        private void ConwertThrowingException<TReturn>(Action action)
+        {
+            this.ConwertThrowingException<object>(() =>
+            {
+                action();
+                return null;
+            });
+        }
+
+        private TReturn ConwertThrowingException<TReturn>(Func<TReturn> action)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
         }
 
         private ChromeDriver GetChromeDriver()
@@ -686,7 +712,7 @@
 
         #endregion
 
-        internal class SdbgerTracer : ITraceListener
+        private class SdbgerTracer : ITraceListener
         {
             #region Fields
 

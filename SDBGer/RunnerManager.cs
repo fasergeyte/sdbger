@@ -41,9 +41,9 @@
 
         #region Public Methods and Operators
 
-        public void Build()
+        public bool Build(ILogger logger = null)
         {
-            SolutionBuilder.Build(ConfigurationManager.AppSettings["TestsProjectPath"]);
+            return SolutionBuilder.Build(ConfigurationManager.AppSettings["TestsProjectPath"], logger);
         }
 
         public void ClearSteps()
@@ -131,11 +131,29 @@
                     break;
                 case Commands.Rebuild:
                     Release();
-                    Build();
-                    Load();
+                    if (Build(this.logger))
+                    {
+                        this.logger.Success("Build succeed");
+                        Load();
+                        return true;
+                    }
+                    else
+                    {
+                        this.logger.Error("Build failed");
+                        return false;
+                    }
                     break;
                 case Commands.Build:
-                    Build();
+                    if (Build(this.logger))
+                    {
+                        this.logger.Success("Build succeed");
+                        return true;
+                    }
+                    else
+                    {
+                        this.logger.Error("Build failed");
+                        return false;
+                    }
                     break;
                 default:
                     logger.Trace("Unknown command: {0}", command);

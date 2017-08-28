@@ -17,19 +17,9 @@
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        #region Static Fields
-
-        public static readonly DependencyProperty IsReadOnlyModeProperty = DependencyProperty.Register("IsReadOnlyMode", typeof(object), typeof(MainWindow), new PropertyMetadata(default(object)));
-
-        #endregion
-
         #region Fields
 
         private Thread currentExecutingThread;
-
-        private bool isConsoleVisible = false;
-
-        private bool isLoaded = false;
 
         private bool isRedonlyMode = false;
 
@@ -81,6 +71,14 @@
             }
         }
 
+        public bool IsLoaded
+        {
+            get
+            {
+                return this.runnerManager.Runner.IsLoaded;
+            }
+        }
+
         public bool IsRedonlyMode
         {
             get
@@ -127,40 +125,54 @@
             this.CurrentExecutingThread.Abort();
         }
 
-        private void ClearLog_Click(object sender, RoutedEventArgs e)
+        private void Clear()
         {
             this.logger.Log.Clear();
             this.LogOutput.Clear();
         }
 
-        private void ExecuteCommand(string command, params object[] parameters)
+        private void ClearContextAfterErrors()
         {
-            this.ExecuteLongAction(() => { this.runnerManager.ExecuteCommand(command, parameters); });
+            this.ExecuteAction(this.runnerManager.Runner.ClearContextAfterErrors);
         }
 
-        private void ExecuteLongAction(Action action)
+        private void ClearLog_Click(object sender, RoutedEventArgs e)
+        {
+            this.Clear();
+        }
+
+        private void ExecuteAction(Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception e)
+            {
+                this.logger.Error(e);
+            }
+        }
+
+        private async void ExecuteActionAsync(Action action)
         {
             this.IsRedonlyMode = true;
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 this.CurrentExecutingThread = Thread.CurrentThread;
 
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    this.logger.Error(e);
-                }
-                finally
-                {
-                    this.IsRedonlyMode = false;
-                    this.CurrentExecutingThread = null;
-                    this.runnerManager.Runner.ClearContextAfterErrors();
-                }
+                this.ExecuteAction(action);
+
+                this.IsRedonlyMode = false;
+                this.CurrentExecutingThread = null;
+                this.ClearContextAfterErrors();
+                this.UpdateLoadButtonName();
             });
+        }
+
+        private void ExecuteCommand(string command, params object[] parameters)
+        {
+            this.ExecuteActionAsync(() => { this.runnerManager.ExecuteCommand(command, parameters); });
         }
 
         private void InitLogger()
@@ -175,25 +187,25 @@
             this.outputUpdateTimmer.Start();
         }
 
-        private void Load_Click(object sender, RoutedEventArgs e)
+        private void Load()
         {
-            if (!this.isLoaded)
+            if (!this.IsLoaded)
             {
-                this.ExecuteLongAction(() =>
+                this.ExecuteActionAsync(() =>
                 {
                     this.runnerManager.Load();
                     this.UpdateSidTextbox();
                 });
-
-                this.isLoaded = true;
-                this.LoadButton.Content = "Release";
             }
             else
             {
                 this.ExecuteCommand(RunnerManager.Commands.Release);
-                this.isLoaded = false;
-                this.LoadButton.Content = "Load";
             }
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            this.Load();
         }
 
         private void Rebuild_Click(object sender, RoutedEventArgs e)
@@ -201,7 +213,7 @@
             this.ExecuteCommand(RunnerManager.Commands.Rebuild);
         }
 
-        private void RunButton_Click(object sender, RoutedEventArgs e)
+        private void Run()
         {
             this.runnerManager.ScenarioBuffer.Clear();
             this.runnerManager.ScenarioBuffer.Append(this.StepsInput.Text);
@@ -217,11 +229,16 @@
             }
             var sid = this.CurrentSidTextBlock.Text;
 
-            this.ExecuteLongAction(() =>
+            this.ExecuteActionAsync(() =>
             {
                 this.runnerManager.ExecuteCommand(RunnerManager.Commands.SetScenarioContextValue, "{sid}", sid);
                 this.runnerManager.ExecuteCommand(RunnerManager.Commands.Run);
             });
+        }
+
+        private void RunButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Run();
         }
 
         private void ScrollOutputTextboxToEnd()
@@ -229,6 +246,11 @@
             this.LogOutput.Focus();
             this.LogOutput.CaretIndex = this.LogOutput.Text.Length;
             this.LogOutput.ScrollToEnd();
+        }
+
+        private void UpdateLoadButtonName()
+        {
+            this.LoadButton.Dispatcher.Invoke(() => this.LoadButton.Content = this.IsLoaded ? "Release" : "Load");
         }
 
         private void UpdateOutput()
