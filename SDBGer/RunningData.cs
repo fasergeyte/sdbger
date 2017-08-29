@@ -5,8 +5,8 @@
     using System.Diagnostics;
 
     using OpenQA.Selenium.Chrome;
-
-    using TechTalk.SpecFlow;
+    using OpenQA.Selenium.IE;
+    using OpenQA.Selenium.Remote;
 
     [Serializable]
     public class RunningData
@@ -35,19 +35,19 @@
 
         #region Public Properties
 
-        public Dictionary<string, object> FeatureContext { get; set; }
-
-        public Dictionary<string, object> ScenarioContext { get; set; }
-
         public string CurrentFeature { get; set; }
 
         public string CurrentScenario { get; set; }
+
+        public Dictionary<string, object> FeatureContext { get; set; }
+
+        public Dictionary<string, object> ScenarioContext { get; set; }
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void ChangeChromeDriverData(ChromeDriver chromeDriver)
+        public void ChangeDriverData(RemoteWebDriver chromeDriver)
         {
             // Close new browser.
             chromeDriver.Close();
@@ -69,12 +69,12 @@
 
             var serviceUri = chromeDriver.GetMemberValue("executor.service.ServiceUrl");
             chromeDriver.SetMemberValue("executor.internalExecutor.remoteServerUri", serviceUri);
-            
+
             // kill new ChromeDriver.
             unrequiredProcess.Kill();
         }
 
-        public void SaveChromeDriver(ChromeDriver chromeDriver)
+        public void SaveDriver(object chromeDriver)
         {
             foreach (var field in this.fieldsOfChromeDriver)
             {

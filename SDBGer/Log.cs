@@ -36,7 +36,7 @@
                     return;
                 }
 
-                SpecflowManager.KillChromeDriver();
+                SpecflowManager.KillDrivers();
                 Environment.Exit(0);
             });
         }

@@ -45,7 +45,7 @@
         {
             get
             {
-                return this.specManager.IsChromeDriverInitialized;
+                return this.specManager.IsDriverInitialized;
             }
         }
 
@@ -239,7 +239,7 @@
 
         public void SetNewChrome()
         {
-            this.specManager.SetNewChrome();
+            this.specManager.SetNewDriver();
         }
 
         public void SetValueToFeatureContext(string key, string value)

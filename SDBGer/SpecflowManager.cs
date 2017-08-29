@@ -14,7 +14,7 @@
 
     using NUnit.Framework;
 
-    using OpenQA.Selenium.Chrome;
+    using OpenQA.Selenium.Remote;
 
     using TechTalk.SpecFlow;
     using TechTalk.SpecFlow.Bindings;
@@ -124,11 +124,12 @@
             }
         }
 
-        public bool IsChromeDriverInitialized
+        public bool IsDriverInitialized
         {
             get
             {
-                return this.webBrowser.GetMemberValue<ChromeDriver>("driver") != null;
+                // We does not use property Driver because it creates new driver if one does not exist.
+                return this.webBrowser.GetMemberValue<object>("driver") != null;
             }
         }
 
@@ -136,10 +137,10 @@
 
         #region Public Methods and Operators
 
-        public static void KillChromeDriver()
+        public static void KillDrivers()
         {
             // Kill chrome driver withoutchrome
-            foreach (var process in Process.GetProcesses().Where(p => p.ProcessName == "chromedriver"))
+            foreach (var process in Process.GetProcesses().Where(p => p.ProcessName == "chromedriver" || p.ProcessName == "IEDriverServer"))
             {
                 process.Kill();
             }
@@ -147,7 +148,7 @@
 
         public void ApplyRunningData(RunningData rd)
         {
-            rd.ChangeChromeDriverData(this.GetChromeDriver());
+            rd.ChangeDriverData(this.GetDriver());
 
             // TODO: Implement for namespaces of feature
             if (rd.CurrentFeature != null)
@@ -209,7 +210,8 @@
         {
             var rd = new RunningData();
 
-            rd.SaveChromeDriver(this.webBrowser.GetPropertyValue<ChromeDriver>("Driver"));
+            rd.SaveDriver(this.webBrowser.GetPropertyValue<object>("Driver"));
+
             rd.FeatureContext = FeatureContext.Current.Where(
                 item =>
                 {
@@ -295,6 +297,7 @@
 
         public void InitFeature(string featureNameOrClassName, string nspase = null)
         {
+            nspase = string.IsNullOrEmpty(nspase) ? null : nspase;
             // get features with specified features description
             var features = this.testAssembly.GetTypes()
                 .Where(
@@ -407,11 +410,11 @@
             return this.ConvertException(this.GetResultException());
         }
 
-        public void SetNewChrome()
+        public void SetNewDriver()
         {
-            KillChromeDriver();
+            KillDrivers();
             this.webBrowser.SetMemberValue("driver", null);
-            this.webBrowser.GetMemberValue<ChromeDriver>("Driver");
+            this.webBrowser.GetMemberValue<RemoteWebDriver>("Driver");
         }
 
         public void SetValueToFeatureContext(string key, string value)
@@ -463,7 +466,10 @@
 
         private Exception ConvertException(Exception e)
         {
-            return new Exception("asdfasdf", e);
+            return e == null ? null :
+                new Exception(e.StackTrace == null ?
+                    e.Message :
+                    string.Format("{0}\n-------------------------------------------\n{1}", e.Message, e.StackTrace));
         }
 
         private void ConwertThrowingException<TReturn>(Action action)
@@ -487,9 +493,9 @@
             }
         }
 
-        private ChromeDriver GetChromeDriver()
+        private RemoteWebDriver GetDriver()
         {
-            return this.webBrowser.GetMemberValue<ChromeDriver>("Driver");
+            return this.webBrowser.GetMemberValue<RemoteWebDriver>("Driver");
         }
 
         private Exception GetResultException()
@@ -508,7 +514,7 @@
 
         private object GetValueFromContext(string key, IDictionary<string, object> current)
         {
-            return current[key];
+            return current.ContainsKey(key) ? current[key] : null;
         }
 
         private void InitFeature(FeatureInfo featureInfo)

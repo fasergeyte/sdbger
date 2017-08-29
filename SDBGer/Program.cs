@@ -174,7 +174,7 @@
         private static void Main(string[] args)
         {
             // Kill chrome driver
-            SpecflowManager.KillChromeDriver();
+            SpecflowManager.KillDrivers();
 
             r = new Runner(new DefaultLogger());
 

@@ -12,9 +12,10 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="275*" />
             <RowDefinition Height="2" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="306*" />
             <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         <Grid.Background>
@@ -23,7 +24,116 @@
                 <GradientStop Color="#FF191919" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
-        <Grid>
+        <Grid IsEnabled="{Binding IsRedonlyMode, Converter={StaticResource InverseBooleanConverter}, ElementName=MainUI}" Grid.Row="0" Margin="5 5 5 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="40" />
+            </Grid.ColumnDefinitions>
+            <TextBox  Width="auto" Name="NameSpaceTextBox" Grid.Column="0">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="Black" />
+                            <Setter Property="Foreground" Value="LightGray" />
+                        </Style.Setters>
+                        <Style.Resources>
+                            <VisualBrush x:Key="CueBannerBrush" Stretch="None">
+                                <VisualBrush.Visual>
+                                    <TextBlock
+                                        Name="Debugl"
+                                        Text="namespace"
+                                        Foreground="LightGray"
+                                        FontStyle="Italic" />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Style.Resources>
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="Black" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Width="auto" Name="FeatureNameTextBox" Grid.Column="1">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="Black" />
+                            <Setter Property="Foreground" Value="LightGray" />
+                        </Style.Setters>
+                        <Style.Resources>
+                            <VisualBrush x:Key="CueBannerBrush" Stretch="None">
+                                <VisualBrush.Visual>
+                                    <TextBlock
+                                        Text="feature"
+                                        Foreground="LightGray"
+                                        FontStyle="Italic" />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Style.Resources>
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="Black" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Width="auto" Name="ScenarioNameTextBox" Grid.Column="2">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="Black" />
+                            <Setter Property="Foreground" Value="LightGray" />
+                        </Style.Setters>
+                        <Style.Resources>
+                            <VisualBrush x:Key="CueBannerBrush" Stretch="None">
+                                <VisualBrush.Visual>
+                                    <TextBlock
+                                        Name="Debugl"
+                                        Text="scenario"
+                                        Foreground="LightGray"
+                                        FontStyle="Italic" />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Style.Resources>
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="Black" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <Button Content="Run" Grid.Column="3" Click="RunScenario_Click" />
+
+
+        </Grid>
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="50" />
@@ -60,9 +170,9 @@
                         IsEnabled="{Binding CurrentExecutingThread, Converter={StaticResource IsNotNullToBooleanConverter}, ElementName=MainUI}" />
             </StackPanel>
         </Grid>
-        <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Background="Black"
+        <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" Background="Black"
                       ResizeDirection="Rows" />
-        <TextBox Grid.Row="2" x:Name="LogOutput" Height="auto" Margin="5,5,5,0" TextWrapping="Wrap"
+        <TextBox Grid.Row="3" x:Name="LogOutput" Height="auto" Margin="5,5,5,0" TextWrapping="Wrap"
                  Background="Black" SelectionBrush="#FF74BAFF" Foreground="White" FontFamily="Consolas" Cursor=""
                  ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" UseLayoutRounding="False"
                  FontStretch="Expanded" AllowDrop="False" IsUndoEnabled="False"
@@ -74,7 +184,7 @@
                 </ContextMenu>
             </TextBox.ContextMenu>
         </TextBox>
-        <DockPanel Grid.Row="3" LastChildFill="True" Margin="5, 0">
+        <DockPanel Grid.Row="4" LastChildFill="True" Margin="5, 0">
             <Label FontSize="12" Padding="5 0" Foreground="White" VerticalContentAlignment="Center" Content="{}{sid} =" />
             <TextBox x:Name="CurrentSidTextBlock"
                      IsReadOnly="{Binding IsRedonlyMode, ElementName=MainUI}"

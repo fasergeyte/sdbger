@@ -161,12 +161,23 @@
             {
                 this.CurrentExecutingThread = Thread.CurrentThread;
 
-                this.ExecuteAction(action);
+                // try finally for cancellation by abort
+                try
+                {
+                    this.ExecuteAction(action);
+                }
+                finally
+                {
+                    this.IsRedonlyMode = false;
+                    this.CurrentExecutingThread = null;
 
-                this.IsRedonlyMode = false;
-                this.CurrentExecutingThread = null;
-                this.ClearContextAfterErrors();
-                this.UpdateLoadButtonName();
+                    if (this.IsLoaded)
+                    {
+                        this.ClearContextAfterErrors();
+                    }
+
+                    this.UpdateLoadButtonName();
+                }
             });
         }
 
@@ -241,6 +252,11 @@
             this.Run();
         }
 
+        private void RunScenario_Click(object sender, RoutedEventArgs e)
+        {
+            this.ExecuteCommand(RunnerManager.Commands.RunScenario, this.NameSpaceTextBox.Text.Trim(), this.FeatureNameTextBox.Text.Trim(), this.ScenarioNameTextBox.Text.Trim());
+        }
+
         private void ScrollOutputTextboxToEnd()
         {
             this.LogOutput.Focus();
@@ -265,8 +281,7 @@
         private void UpdateSidTextbox()
         {
             this.CurrentSidTextBlock.Dispatcher.Invoke(() =>
-                this.CurrentSidTextBlock.Text = this.runnerManager.Runner.GetValueFromScenarioContext("{sid}").ToString()
-                );
+                this.CurrentSidTextBlock.Text = this.runnerManager.Runner.GetValueFromScenarioContext("{sid}") as string);
         }
 
         #endregion
