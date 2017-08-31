@@ -189,15 +189,15 @@
 
         public void RunScenario(string scenarioName = null, string featureName = null, string nspace = null)
         {
-            if (featureName != null)
+            if (!string.IsNullOrEmpty(featureName))
             {
-                this.InitFeature(featureName, nspace);
+                this.InitFeature(featureName.Trim(), nspace == null ? null : nspace.Trim());
                 //this.BeforeFeature();
             }
 
-            if (scenarioName != null)
+            if (!string.IsNullOrEmpty(scenarioName))
             {
-                this.InitScenario(scenarioName);
+                this.InitScenario(scenarioName.Trim());
                 //this.BeforeScenario();
             }
 
@@ -209,7 +209,7 @@
             }
             else
             {
-                logger.Success(string.Format("The scenario '{0}' completed successfully", scenarioName));
+                this.logger.Success(string.Format("The scenario '{0}' COMPLETE: SUCCESSFULY", scenarioName));
             }
         }
 

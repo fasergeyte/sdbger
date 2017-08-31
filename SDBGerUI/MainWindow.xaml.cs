@@ -153,11 +153,11 @@
             }
         }
 
-        private async void ExecuteActionAsync(Action action)
+        private void ExecuteActionAsync(Action action)
         {
             this.IsRedonlyMode = true;
 
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 this.CurrentExecutingThread = Thread.CurrentThread;
 
